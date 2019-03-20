@@ -1,15 +1,25 @@
 use Mix.Config
 
 config :kafka_message_bus,
-  default_topic: "example",
-  source: "example_service",
-  heartbeat_interval: 1_000,
-  commit_interval: 1_000,
-  partitioner: KafkaMessageBus.Partitioner.Random,
+  adapters: [
+    KafkaMessageBus.Adapters.Exq
+    #    KafkaMessageBus.Adapters.Kaffe
+  ]
+
+config :kafka_message_bus, KafkaMessageBus.Adapters.Exq,
   consumers: [
-    {"user", "login", KafkaMessageBus.MessageProcessor}
+    {"custom_job_queue", "example_resource", KafkaMessageBusTest.Adapters.Exq.CustomJobConsumer}
   ],
-  retry_strategy: :exq
+  endpoints: [localhost: 6379],
+  namespace: "exq"
+
+config :kafka_message_bus, KafkaMessageBus.Adapters.Kaffe,
+  consumers: [
+    {"custom_kafka_topic", "another_resource",
+     KafkaMessageBusTest.Adapters.Kaffe.CustomJobConsumer}
+  ],
+  endpoints: [localhost: 9092],
+  namespace: "kafka_message_bus"
 
 config :kaffe,
   consumer: [
@@ -25,10 +35,10 @@ config :kaffe,
     subscriber_retries: 5,
     subscriber_retry_delay_ms: 5,
     worker_allocation_strategy: :worker_per_topic_partition
-    ],
+  ],
   producer: [
     partition_strategy: :md5,
-    endpoints: [kafka: 9092],
+    endpoints: [localhost: 9092],
     topics: ["kafka_message_bus"]
   ],
   kafka_mod: :brod
@@ -36,17 +46,3 @@ config :kaffe,
 config :logger,
   backends: [:console],
   level: :debug
-
-config :exq,
-  name: Exq,
-  host: "127.0.0.1",
-  port: 6379,
-  namespace: "exq",
-  concurrency: :infinite,
-  start_on_application: false,
-  queues: ["dead_letter_queue"],
-  poll_timeout: 50,
-  scheduler_poll_timeout: 200,
-  scheduler_enable: true,
-  max_retries: 100,
-  shutdown_timeout: 5000

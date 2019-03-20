@@ -1,9 +1,26 @@
 defmodule KafkaMessageBus.Config do
-  @moduledoc false
-
   alias Supervisor.Spec
 
   @lib_name :kafka_message_bus
+
+  def get_adapters_supervisors do
+    Enum.map(get_adapters(), &build_child_spec/1)
+  end
+
+  defp build_child_spec(adapter) do
+    %{
+      id: adapter,
+      start: {adapter, :start_link, [get_adapter_config(adapter)]}
+    }
+  end
+
+  defp get_adapters do
+    Application.get_env(@lib_name, :adapters)
+  end
+
+  defp get_adapter_config(adapter) do
+    Application.get_env(@lib_name, adapter)
+  end
 
   def default_topic, do: Application.get_env(@lib_name, :default_topic)
 

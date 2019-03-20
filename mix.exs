@@ -1,19 +1,20 @@
 defmodule KafkaMessageBus.Mixfile do
   use Mix.Project
 
-  def project,
-    do: [
+  def project do
+    [
       app: :kafka_message_bus,
       version: "3.0.0",
-      elixir: "~> 1.6.5",
+      elixir: "~> 1.7.4",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
       package: package(),
       name: "KafkaMessageBus",
-      source_url: "https://github.com/heckfer/kafka_message_bus"
+      source_url: "https://github.com/CampGladiator/kafka_message_bus"
     ]
+  end
 
   defp description do
     """
@@ -28,23 +29,29 @@ defmodule KafkaMessageBus.Mixfile do
         "Eduardo Cunha",
         "Fernando Heck",
         "Gabriel Alves",
-        "Matthias Nunes"
+        "Matthias Nunes",
+        "Gabriel Machado"
       ],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/heckfer/kafka_message_bus"}
+      links: %{
+        "GitHub" => "https://github.com/CampGladiator/kafka_message_bus"
+      }
     ]
   end
 
   def application do
-    [applications: [:logger, :kaffe], mod: {KafkaMessageBus.Application, []}]
+    [
+      applications: [:poison, :logger],
+      mod: {KafkaMessageBus.Application, []}
+    ]
   end
 
-  defp deps,
-    do: [
-      {:kaffe, "~> 1.9"},
+  defp deps do
+    [
+      {:kaffe, "~> 1.11"},
       {:exq, "~> 0.12.1"},
-      {:poison, "~> 3.1"},
-      {:credo, "~> 0.9.3", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.18.4", only: :dev}
+      {:poison, "~> 4.0"},
+      {:credo, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
+  end
 end
