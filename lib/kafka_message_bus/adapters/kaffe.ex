@@ -1,7 +1,7 @@
 defmodule KafkaMessageBus.Adapters.Kaffe do
   alias Kaffe.Producer
 
-	alias KafkaMessageBus.Config
+  alias KafkaMessageBus.Config
   alias KafkaMessageBus.Adapters.Kaffe.Consumer
 
   @behaviour KafkaMessageBus.Adapter
@@ -55,7 +55,8 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
         endpoints: config[:endpoints],
         topics: config[:producers]
       ],
-      kafka_mod: :brod
+      kafka_mod: :brod,
+      app_consumers: config[:consumers]
     ]
   end
 
@@ -68,7 +69,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
   defp start_kaffe() do
     {:ok, _} = Application.ensure_all_started(:kaffe)
 
-		Kaffe.Producer.start_producer_client()
+    Kaffe.Producer.start_producer_client()
     Kaffe.Consumer.start_link()
 
     :ok

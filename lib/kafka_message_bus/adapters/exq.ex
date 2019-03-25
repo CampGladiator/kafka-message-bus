@@ -1,7 +1,7 @@
 defmodule KafkaMessageBus.Adapters.Exq do
   @behaviour KafkaMessageBus.Adapter
 
-	alias KafkaMessageBus.Config
+  alias KafkaMessageBus.Config
   alias KafkaMessageBus.Adapters.Exq.Consumer
 
   @impl true

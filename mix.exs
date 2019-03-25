@@ -49,9 +49,9 @@ defmodule KafkaMessageBus.Mixfile do
 
   defp included_applications() do
     [
-    	:kaffe,
-    	:exq
-	  ]
+      :kaffe,
+      :exq
+    ]
   end
 
   defp deps do

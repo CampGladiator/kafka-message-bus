@@ -8,8 +8,8 @@ defmodule KafkaMessageBus.Application do
 
     Config.get_adapters()
     |> Enum.each(fn adapter ->
-        config = Config.get_adapter_config(adapter)
-        :ok = adapter.start_link(config)
+      config = Config.get_adapter_config(adapter)
+      :ok = adapter.start_link(config)
     end)
 
     Supervisor.start_link([], strategy: :one_for_one)

@@ -9,24 +9,23 @@ defmodule KafkaMessageBus.Producer do
     topic = Keyword.get(opts, :topic, Config.default_topic())
     source = Keyword.get(opts, :source, Config.source())
 
-    message =
-      %{
-        source: source,
-        action: action,
-        resource: resource,
-        timestamp: DateTime.utc_now(),
-        request_id: Logger.metadata() |> Keyword.get(:request_id),
-        data: data |> Map.delete(:__meta__)
-      }
+    message = %{
+      source: source,
+      action: action,
+      resource: resource,
+      timestamp: DateTime.utc_now(),
+      request_id: Logger.metadata() |> Keyword.get(:request_id),
+      data: data |> Map.delete(:__meta__)
+    }
 
     opts = Keyword.put(opts, :key, key)
 
-   	topic
-   	|> get_adapters_for_topic()
-   	|> case do
+    topic
+    |> get_adapters_for_topic()
+    |> case do
       [] -> {:error, :topic_not_found}
       adapters -> Enum.map(adapters, fn adapter -> adapter.produce(message, opts) end)
-   	end
+    end
   end
 
   defp get_adapters_for_topic(topic) do
