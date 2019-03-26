@@ -10,18 +10,19 @@ config :kafka_message_bus,
 
 config :kafka_message_bus, KafkaMessageBus.Adapters.Exq,
   consumers: [
-    {"custom_job_queue", "example_resource", KafkaMessageBusTest.Adapters.Exq.CustomJobConsumer}
+    {"job_queue", "job_resource", KafkaMessageBusTest.Adapters.Exq.CustomJobConsumer},
+    {"dead_letter_queue", nil, KafkaMessageBus.Adapters.Exq.DeadLetterQueueConsumer}
   ],
-  producers: ["some_queue"],
+  producers: ["job_queue", "dead_letter_queue"],
   endpoints: [localhost: 6379],
   namespace: "message_bus_namespace"
 
 config :kafka_message_bus, KafkaMessageBus.Adapters.Kaffe,
   consumers: [
-    {"custom_kafka_topic", "another_resource",
+    {"kafka_topic", "kafka_resource",
      KafkaMessageBusTest.Adapters.Kaffe.CustomJobConsumer}
   ],
-  producers: ["some_topic"],
+  producers: ["another_topic"],
   endpoints: [localhost: 9092],
   namespace: "message_bus_consumer_group"
 

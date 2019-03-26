@@ -8,6 +8,6 @@ defmodule KafkaMessageBus.Adapters.Exq.Consumer do
       "Exq message received"
     end)
 
-    ConsumerHandler.perform(module, message)
+    :ok = ConsumerHandler.perform(module, message)
   end
 end

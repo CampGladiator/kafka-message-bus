@@ -32,7 +32,13 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
   end
 
   defp run_consumer(consumer, message) do
-    ConsumerHandler.perform(consumer, message)
+    case ConsumerHandler.perform(consumer, message) do
+      :ok ->
+        :ok
+
+      {:error, reason} ->
+          KafkaMessageBus.produce("dead_letter_queue", nil, nil, nil)
+    end
   end
 
   defp get_consumers_for(topic, resource) do
