@@ -37,7 +37,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
         :ok
 
       {:error, reason} ->
-          KafkaMessageBus.produce("dead_letter_queue", nil, nil, nil)
+        KafkaMessageBus.produce("dead_letter_queue", nil, nil, nil)
     end
   end
 

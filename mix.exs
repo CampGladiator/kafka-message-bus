@@ -42,7 +42,6 @@ defmodule KafkaMessageBus.Mixfile do
 
   def application do
     [
-      applications: [:poison, :logger],
       mod: {KafkaMessageBus.Application, []}
     ]
   end
