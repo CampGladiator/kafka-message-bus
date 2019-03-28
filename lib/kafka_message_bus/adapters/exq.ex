@@ -73,11 +73,11 @@ defmodule KafkaMessageBus.Adapters.Exq do
     end)
   end
 
-  defp start_exq() do
+  defp start_exq do
     import Supervisor.Spec
-    
+
     {:ok, _} = Application.ensure_all_started(:exq)
-    
+
     {:ok, worker(Exq, [])}
   end
 end

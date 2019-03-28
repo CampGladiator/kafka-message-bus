@@ -1,6 +1,6 @@
 [
   inputs: [
-    "{lib,test}/**/*.{ex,exs}",
+    "{config,lib,test}/**/*.{ex,exs}",
     "mix.exs"
   ],
   locals_without_parens: [

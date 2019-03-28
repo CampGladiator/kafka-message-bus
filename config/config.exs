@@ -19,15 +19,14 @@ config :kafka_message_bus, KafkaMessageBus.Adapters.Exq,
 
 config :kafka_message_bus, KafkaMessageBus.Adapters.Kaffe,
   consumers: [
-    {"kafka_topic", "kafka_resource",
-     KafkaMessageBusTest.Adapters.Kaffe.CustomJobConsumer}
+    {"kafka_topic", "kafka_resource", KafkaMessageBusTest.Adapters.Kaffe.CustomJobConsumer}
   ],
   producers: ["another_topic"],
   endpoints: [localhost: 9092],
   namespace: "message_bus_consumer_group"
 
 config :exq,
-	start_on_application: false
+  start_on_application: false
 
 config :logger,
   backends: [:console],

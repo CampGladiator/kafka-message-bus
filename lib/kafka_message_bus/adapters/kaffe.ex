@@ -27,7 +27,8 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
 
   defp to_kaffe_config(config) do
     consumer_topics =
-      Enum.map(config[:consumers], fn entry ->
+      config[:consumers]
+      |> Enum.map(fn entry ->
         entry
         |> Tuple.to_list()
         |> List.first()
@@ -66,9 +67,9 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
     end)
   end
 
-  defp start_kaffe() do
+  defp start_kaffe do
     import Supervisor.Spec
-    
+
     {:ok, _} = Application.ensure_all_started(:kaffe)
 
     {:ok, worker(Kaffe.Consumer, [])}
