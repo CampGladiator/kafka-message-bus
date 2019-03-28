@@ -7,7 +7,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
   @behaviour KafkaMessageBus.Adapter
 
   @impl true
-  def start_link(config) do
+  def init(config) do
     config
     |> to_kaffe_config()
     |> apply_kaffe_config()
@@ -67,11 +67,10 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
   end
 
   defp start_kaffe() do
+    import Supervisor.Spec
+    
     {:ok, _} = Application.ensure_all_started(:kaffe)
 
-    Kaffe.Producer.start_producer_client()
-    Kaffe.Consumer.start_link()
-
-    :ok
+    {:ok, worker(Kaffe.Consumer, [])}
   end
 end

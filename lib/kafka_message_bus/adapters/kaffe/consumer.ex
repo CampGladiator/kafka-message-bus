@@ -37,7 +37,15 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
         :ok
 
       {:error, reason} ->
-        KafkaMessageBus.produce("dead_letter_queue", nil, nil, nil)
+        Logger.error(fn ->
+          "Failed to run handler - will produce `dead_letter_queue` message. Reason: #{
+            inspect(reason)
+          }"
+        end)
+
+        message = %{"message" => message, "consumer" => consumer}
+
+        KafkaMessageBus.produce(message, nil, "failure", "retry", topic: "dead_letter_queue")
     end
   end
 

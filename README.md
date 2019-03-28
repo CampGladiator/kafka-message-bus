@@ -12,6 +12,13 @@ def deps do
 end
 ```
 
+And, for now, this configuration is required:
+
+```elixir
+config :exq,
+  start_on_application: false
+```
+
 ## Usage
 
 The following configuration is expected:

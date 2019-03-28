@@ -4,8 +4,10 @@ defmodule KafkaMessageBus.Adapters.Exq do
   alias KafkaMessageBus.Config
   alias KafkaMessageBus.Adapters.Exq.Consumer
 
+  require Logger
+
   @impl true
-  def start_link(config) do
+  def init(config) do
     config
     |> to_exq_config()
     |> apply_exq_config()
@@ -72,8 +74,10 @@ defmodule KafkaMessageBus.Adapters.Exq do
   end
 
   defp start_exq() do
+    import Supervisor.Spec
+    
     {:ok, _} = Application.ensure_all_started(:exq)
-
-    :ok
+    
+    {:ok, worker(Exq, [])}
   end
 end

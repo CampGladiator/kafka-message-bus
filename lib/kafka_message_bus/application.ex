@@ -4,14 +4,16 @@ defmodule KafkaMessageBus.Application do
   use Application
 
   def start(_type, _args) do
-    import Supervisor.Spec
-
     Config.get_adapters()
-    |> Enum.each(fn adapter ->
-      config = Config.get_adapter_config(adapter)
-      :ok = adapter.start_link(config)
+    |> Enum.flat_map(fn adapter ->
+      adapter
+      |> Config.get_adapter_config()
+      |> adapter.init()
+      |> case do
+        {:ok, child} -> [child]
+        :ok -> []
+      end
     end)
-
-    Supervisor.start_link([], strategy: :one_for_one)
+    |> Supervisor.start_link(strategy: :one_for_one)
   end
 end

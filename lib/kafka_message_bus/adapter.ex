@@ -1,15 +1,10 @@
 defmodule KafkaMessageBus.Adapter do
   @type config :: Map.t()
-
-  @type name :: atom() | pid()
   @type reason :: any()
-
   @type message :: Map.t()
-  @type topic :: String.t()
-  @type resource :: String.t()
   @type opts :: Keyword.t()
+  @type process_definition :: Supervisor.Spec.spec()
 
-  @callback start_link(config) :: {:ok, name} | {:error, reason}
+  @callback init(config) :: :ok | {:ok, process_definition} | {:error, reason}
   @callback produce(message, opts) :: :ok | {:error, reason}
-  @callback retry(message, opts) :: :ok | {:error, reason}
 end

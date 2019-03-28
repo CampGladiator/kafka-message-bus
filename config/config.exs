@@ -26,6 +26,9 @@ config :kafka_message_bus, KafkaMessageBus.Adapters.Kaffe,
   endpoints: [localhost: 9092],
   namespace: "message_bus_consumer_group"
 
+config :exq,
+	start_on_application: false
+
 config :logger,
   backends: [:console],
   level: :debug

@@ -23,8 +23,21 @@ defmodule KafkaMessageBus.Producer do
     topic
     |> get_adapters_for_topic()
     |> case do
-      [] -> {:error, :topic_not_found}
-      adapters -> Enum.map(adapters, fn adapter -> adapter.produce(message, opts) end)
+      [] ->
+        {:error, :topic_not_found}
+
+      adapters ->
+        adapters
+        |> Enum.map(fn adapter -> {adapter, adapter.produce(message, opts)} end)
+        |> Enum.each(fn
+          {adapter, :ok} ->
+            Logger.debug(fn -> "Message produced by #{inspect(adapter)}" end)
+
+          {adapter, reason} ->
+            Logger.error(fn ->
+              "Failed to send message by #{inspect(adapter)}: #{inspect(reason)}"
+            end)
+        end)
     end
   end
 
