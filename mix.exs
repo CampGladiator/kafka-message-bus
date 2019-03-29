@@ -4,8 +4,9 @@ defmodule KafkaMessageBus.Mixfile do
   def project do
     [
       app: :kafka_message_bus,
+      included_applications: included_applications(),
       version: "3.0.0",
-      elixir: "~> 1.7.4",
+      elixir: "~> 1.7",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -46,11 +47,18 @@ defmodule KafkaMessageBus.Mixfile do
     ]
   end
 
+  defp included_applications() do
+    [
+    	:kaffe,
+    	:exq
+	  ]
+  end
+
   defp deps do
     [
       {:kaffe, "~> 1.11"},
       {:exq, "~> 0.12.1"},
-      {:poison, "~> 4.0"},
+      {:poison, "~> 3.0"},
       {:credo, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end

@@ -1,6 +1,4 @@
 defmodule KafkaMessageBus.Consumer do
-  @moduledoc false
-
   alias KafkaMessageBus.ConsumerEnqueuer
 
   require Logger

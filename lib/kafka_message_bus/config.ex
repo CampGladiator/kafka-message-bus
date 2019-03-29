@@ -14,11 +14,11 @@ defmodule KafkaMessageBus.Config do
     }
   end
 
-  defp get_adapters do
+  def get_adapters do
     Application.get_env(@lib_name, :adapters)
   end
 
-  defp get_adapter_config(adapter) do
+  def get_adapter_config(adapter) do
     Application.get_env(@lib_name, adapter)
   end
 

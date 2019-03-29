@@ -1,6 +1,9 @@
 defmodule KafkaMessageBus.Adapters.Exq do
   @behaviour KafkaMessageBus.Adapter
 
+	alias KafkaMessageBus.Config
+  alias KafkaMessageBus.Adapters.Exq.Consumer
+
   @impl true
   def start_link(config) do
     config
@@ -11,7 +14,10 @@ defmodule KafkaMessageBus.Adapters.Exq do
   end
 
   @impl true
-  def produce(message, topic, resource) do
+  def produce(message, opts) do
+    topic = Keyword.get(opts, :topic, Config.default_topic())
+    resource = message.resource
+
     :exq
     |> Application.get_env(:consumers)
     |> Enum.flat_map(fn
@@ -27,7 +33,7 @@ defmodule KafkaMessageBus.Adapters.Exq do
 
       modules ->
         Enum.each(modules, fn module ->
-          Exq.enqueue(Exq, topic, module, [message])
+          Exq.enqueue(Exq, topic, Consumer, [module, message])
         end)
     end
   end
@@ -66,6 +72,8 @@ defmodule KafkaMessageBus.Adapters.Exq do
   end
 
   defp start_exq() do
-    Exq.start_link()
+    {:ok, _} = Application.ensure_all_started(:exq)
+
+    :ok
   end
 end

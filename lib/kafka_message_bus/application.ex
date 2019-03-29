@@ -6,14 +6,12 @@ defmodule KafkaMessageBus.Application do
   def start(_type, _args) do
     import Supervisor.Spec
 
-    children = Config.get_adapters_supervisors()
+    Config.get_adapters()
+    |> Enum.each(fn adapter ->
+        config = Config.get_adapter_config(adapter)
+        :ok = adapter.start_link(config)
+    end)
 
-    Supervisor.start_link(children, strategy: :one_for_one)
-
-    # ([supervisor(GroupMemberSupervisor, [])] ++ Config.queue_supervisor())
-    # |> Supervisor.start_link(
-    # strategy: :one_for_one,
-    # name: KafkaMessageBus.Supervisor
-    # )
+    Supervisor.start_link([], strategy: :one_for_one)
   end
 end
