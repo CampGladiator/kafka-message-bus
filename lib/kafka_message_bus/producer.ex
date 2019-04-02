@@ -1,19 +1,30 @@
 defmodule KafkaMessageBus.Producer do
-  require Logger
+  alias KafkaMessageBus.{Config, Utils}
 
-  alias KafkaMessageBus.Config
+  require Logger
 
   def produce(data, key, resource, action, opts \\ []) do
     topic = Keyword.get(opts, :topic, Config.default_topic())
     source = Keyword.get(opts, :source, Config.source())
+
+    Logger.info(fn ->
+      key_log =
+        if key != nil do
+          "(key: #{key}) "
+        else
+          ""
+        end
+
+      "Producing message on #{key_log}#{topic}/#{resource}: #{action}"
+    end)
 
     message = %{
       source: source,
       action: action,
       resource: resource,
       timestamp: DateTime.utc_now(),
-      request_id: Logger.metadata() |> Keyword.get(:request_id),
-      data: data |> Map.delete(:__meta__)
+      request_id: Keyword.get(Logger.metadata(), :request_id),
+      data: Map.delete(data, :__meta__)
     }
 
     opts = Keyword.put(opts, :key, key)
@@ -22,24 +33,34 @@ defmodule KafkaMessageBus.Producer do
     |> get_adapters_for_topic()
     |> case do
       [] ->
+        Logger.error(fn -> "Found no adapters for #{topic}" end)
+
         {:error, :topic_not_found}
 
       adapters ->
         adapters
-        |> Enum.map(fn adapter -> {adapter, adapter.produce(message, opts)} end)
+        |> Enum.map(fn adapter ->
+          Logger.debug(fn ->
+            "Producing message with #{Utils.to_module_short_name(adapter)} adapter"
+          end)
+
+          {adapter, adapter.produce(message, opts)}
+        end)
         |> Enum.each(&handle_adapter_result/1)
     end
   end
 
   defp handle_adapter_result({adapter, :ok}) do
-    Logger.debug(fn -> "Message produced by #{inspect(adapter)}" end)
+    Logger.debug(fn ->
+      "Message successfully produced by #{Utils.to_module_short_name(adapter)} adapter"
+    end)
 
     :ok
   end
 
   defp handle_adapter_result({adapter, error}) do
     Logger.error(fn ->
-      "Failed to send message by #{inspect(adapter)}: #{inspect(error)}"
+      "Failed to send message using #{Utils.to_module_short_name(adapter)}: #{inspect(error)}"
     end)
 
     {:error, error}

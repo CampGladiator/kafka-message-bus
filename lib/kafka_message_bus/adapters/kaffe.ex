@@ -13,9 +13,17 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
 
   @impl Adapter
   def init(config) do
+    Logger.info(fn ->
+      "Initializing Kaffe adapter"
+    end)
+
     config
     |> to_kaffe_config()
     |> apply_kaffe_config()
+
+    Logger.debug(fn ->
+      "Kaffe configuration applied"
+    end)
 
     start_kaffe()
   end

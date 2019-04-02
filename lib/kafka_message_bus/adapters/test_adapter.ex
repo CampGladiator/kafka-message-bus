@@ -23,9 +23,7 @@ defmodule KafkaMessageBus.Adapters.TestAdapter do
   def produce(message, opts) do
     topic = Keyword.get(opts, :topic, Config.default_topic())
 
-    if topic not in Agent.get(__MODULE__, & &1.producers) do
-      {:error, :unknown_topic}
-    else
+    if topic in Agent.get(__MODULE__, & &1.producers) do
       key = self()
 
       Agent.update(__MODULE__, fn state ->
@@ -33,12 +31,14 @@ defmodule KafkaMessageBus.Adapters.TestAdapter do
 
         %{state | messages: Map.put(state.messages, key, [message | messages])}
       end)
+    else
+      {:error, :unknown_topic}
     end
   end
 
-  def get_produced_messages() do
+  def get_produced_messages do
     key = self()
-    
+
     Agent.get(__MODULE__, fn state -> Map.get(state.messages, key) end)
   end
 end

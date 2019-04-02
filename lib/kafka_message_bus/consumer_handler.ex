@@ -6,11 +6,10 @@ defmodule KafkaMessageBus.ConsumerHandler do
   end
 
   def perform(module, message) do
-    with :ok <- module.process(message) do
-      :ok
-    else
-      {:error, reason} ->
-        {:error, reason}
+    case module.process(message) do
+      :ok -> :ok
+      {:error, _reason} = result -> result
+      other -> {:error, other}
     end
   rescue
     e -> {:error, e}

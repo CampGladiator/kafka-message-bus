@@ -4,13 +4,24 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
   require Logger
 
   def handle_message(message) do
-    Logger.debug(fn ->
-      "Kaffe message received"
+    Logger.info(fn ->
+      "Received Kaffe message"
     end)
 
     message.value
     |> Jason.decode()
+    |> configure_logger()
     |> run_consumers(message.topic)
+  end
+
+  defp configure_logger({:ok, contents} = mesasge) do
+    Logger.metadata(request_id: contents["request_id"])
+
+    mesasge
+  end
+
+  defp configure_logger({:error, _reason} = message) do
+    message
   end
 
   defp run_consumers({:ok, contents}, topic) do
@@ -34,6 +45,10 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
   defp run_consumer(consumer, message) do
     case ConsumerHandler.perform(consumer, message) do
       :ok ->
+        Logger.info(fn ->
+          "Message successfully processed by #{consumer}"
+        end)
+
         :ok
 
       {:error, reason} ->
@@ -43,7 +58,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
           }"
         end)
 
-        message = %{"message" => message, "consumer" => consumer}
+        message = %{"message" => message, "consumer" => consumer, "previous_error" => reason}
 
         KafkaMessageBus.produce(message, nil, "failure", "retry", topic: "dead_letter_queue")
     end

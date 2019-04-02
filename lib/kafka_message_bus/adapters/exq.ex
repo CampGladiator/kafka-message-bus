@@ -2,7 +2,7 @@ defmodule KafkaMessageBus.Adapters.Exq do
   alias KafkaMessageBus.{
     Config,
     Adapter,
-    Adapter.Exq.Consumer
+    Adapters.Exq.Consumer
   }
 
   require Logger
@@ -11,9 +11,17 @@ defmodule KafkaMessageBus.Adapters.Exq do
 
   @impl Adapter
   def init(config) do
+    Logger.info(fn ->
+      "Initializing Exq adapter"
+    end)
+
     config
     |> to_exq_config()
     |> apply_exq_config()
+
+    Logger.debug(fn ->
+      "Exq configuration applied"
+    end)
 
     start_exq()
   end
