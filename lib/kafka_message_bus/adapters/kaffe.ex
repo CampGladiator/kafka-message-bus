@@ -1,12 +1,17 @@
 defmodule KafkaMessageBus.Adapters.Kaffe do
   alias Kaffe.Producer
 
-  alias KafkaMessageBus.Config
-  alias KafkaMessageBus.Adapters.Kaffe.Consumer
+  alias KafkaMessageBus.{
+    Adapter,
+    Config,
+    Adapters.Kaffe.Consumer
+  }
 
-  @behaviour KafkaMessageBus.Adapter
+  require Logger
 
-  @impl true
+  @behaviour Adapter
+
+  @impl Adapter
   def init(config) do
     config
     |> to_kaffe_config()
@@ -15,7 +20,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
     start_kaffe()
   end
 
-  @impl true
+  @impl Adapter
   def produce(message, opts) do
     topic = Keyword.get(opts, :topic, Config.default_topic())
     key = Keyword.get(opts, :key)

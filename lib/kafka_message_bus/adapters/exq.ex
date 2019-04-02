@@ -1,12 +1,15 @@
 defmodule KafkaMessageBus.Adapters.Exq do
-  @behaviour KafkaMessageBus.Adapter
-
-  alias KafkaMessageBus.Config
-  alias KafkaMessageBus.Adapters.Exq.Consumer
+  alias KafkaMessageBus.{
+    Config,
+    Adapter,
+    Adapter.Exq.Consumer
+  }
 
   require Logger
 
-  @impl true
+  @behaviour Adapter
+
+  @impl Adapter
   def init(config) do
     config
     |> to_exq_config()
@@ -15,7 +18,7 @@ defmodule KafkaMessageBus.Adapters.Exq do
     start_exq()
   end
 
-  @impl true
+  @impl Adapter
   def produce(message, opts) do
     topic = Keyword.get(opts, :topic, Config.default_topic())
     resource = message.resource
