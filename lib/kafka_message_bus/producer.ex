@@ -1,6 +1,4 @@
 defmodule KafkaMessageBus.Producer do
-  @moduledoc false
-
   require Logger
 
   alias KafkaMessageBus.Config

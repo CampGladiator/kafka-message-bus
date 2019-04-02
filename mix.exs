@@ -58,7 +58,7 @@ defmodule KafkaMessageBus.Mixfile do
     [
       {:kaffe, "~> 1.11"},
       {:exq, "~> 0.12.1"},
-      {:poison, "~> 3.0"},
+      {:jason, "~> 1.1"},
       {:credo, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end
