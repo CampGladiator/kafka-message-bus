@@ -5,7 +5,7 @@ defmodule KafkaMessageBus.Mixfile do
     [
       app: :kafka_message_bus,
       included_applications: included_applications(),
-      version: "4.0.0-rc.1",
+      version: "4.0.0-rc.2",
       elixir: "~> 1.7",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
@@ -20,7 +20,7 @@ defmodule KafkaMessageBus.Mixfile do
 
   defp description do
     """
-    Wrapper for Kaffe for internal use
+    A general purpose messaging utility library supporting Exq and Kaffe
     """
   end
 
@@ -59,6 +59,7 @@ defmodule KafkaMessageBus.Mixfile do
       {:kaffe, "~> 1.11"},
       {:exq, "~> 0.12.1"},
       {:poison, "~> 3.0"},
+      {:ex_doc, "~> 0.20.0"},
       {:credo, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end
