@@ -22,7 +22,11 @@ defmodule KafkaMessageBus.Adapters.TestAdapter do
 
   def produce(message, opts) do
     topic = Keyword.get(opts, :topic, Config.default_topic())
-    message = Poison.encode!(message)
+    message =
+      message
+      |> Poison.encode!()
+      |> Poison.decode!()
+      |> Map.put("topic", topic)
 
     if topic in Agent.get(__MODULE__, & &1.producers) do
       key = self()
@@ -41,5 +45,18 @@ defmodule KafkaMessageBus.Adapters.TestAdapter do
     key = self()
 
     Agent.get(__MODULE__, fn state -> Map.get(state.messages, key) end)
+  end
+
+  def get_produced_messages(topic, resource, action) do
+    key = self()
+
+    Agent.get(__MODULE__, fn state ->
+      state.messages
+      |> Map.get(key)
+      |> Enum.filter(fn message ->
+        message["topic"] == topic and message["resource"] == resource and
+          message["action"] == action
+      end)
+    end)
   end
 end
