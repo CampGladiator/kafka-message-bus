@@ -1,13 +1,12 @@
 defmodule KafkaMessageBus.ConsumerEnqueuer do
-  @moduledoc false
+  @moduledoc """
+  Legacy dead letter queue handler.
+
+  This is not used directly anymore but is still necessary in case old messages
+  are being reprocessed.
+  """
 
   require Logger
-
-  @queue_name "dead_letter_queue"
-
-  def enqueue(msg_content, message_processor) do
-    Exq.enqueue(Exq, @queue_name, __MODULE__, [msg_content, message_processor])
-  end
 
   def perform(msg_content, message_processor) do
     Logger.info("Retrying message with content: #{inspect(msg_content)}")

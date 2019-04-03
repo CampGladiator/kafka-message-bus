@@ -1,52 +1,33 @@
 use Mix.Config
 
 config :kafka_message_bus,
-  default_topic: "example",
-  source: "example_service",
-  heartbeat_interval: 1_000,
-  commit_interval: 1_000,
-  partitioner: KafkaMessageBus.Partitioner.Random,
-  consumers: [
-    {"user", "login", KafkaMessageBus.MessageProcessor}
-  ],
-  retry_strategy: :exq
+  source: "kafka-message-bus",
+  default_topic: "custom_kafka_topic",
+  adapters: [
+    KafkaMessageBus.Adapters.Exq,
+    KafkaMessageBus.Adapters.Kaffe
+  ]
 
-config :kaffe,
-  consumer: [
-    endpoints: [localhost: 9092],
-    topics: ["user"],
-    consumer_group: "kafka_message_bus",
-    message_handler: KafkaMessageBus.Consumer,
-    async_message_ack: false,
-    offset_commit_interval_seconds: 10,
-    start_with_earliest_message: false,
-    rebalance_delay_ms: 100,
-    max_bytes: 10_000,
-    subscriber_retries: 5,
-    subscriber_retry_delay_ms: 5,
-    worker_allocation_strategy: :worker_per_topic_partition
-    ],
-  producer: [
-    partition_strategy: :md5,
-    endpoints: [kafka: 9092],
-    topics: ["kafka_message_bus"]
+config :kafka_message_bus, KafkaMessageBus.Adapters.Exq,
+  consumers: [
+    {"job_queue", "job_resource", KafkaMessageBusTest.Adapters.Exq.CustomJobConsumer},
+    {"dead_letter_queue", nil, KafkaMessageBus.Adapters.Exq.DeadLetterQueueConsumer}
   ],
-  kafka_mod: :brod
+  producers: ["job_queue", "dead_letter_queue"],
+  endpoints: [localhost: 6379],
+  namespace: "message_bus_namespace"
+
+config :kafka_message_bus, KafkaMessageBus.Adapters.Kaffe,
+  consumers: [
+    {"kafka_topic", "kafka_resource", KafkaMessageBusTest.Adapters.Kaffe.CustomJobConsumer}
+  ],
+  producers: ["another_topic"],
+  endpoints: [localhost: 9092],
+  namespace: "message_bus_consumer_group"
+
+config :exq,
+  start_on_application: false
 
 config :logger,
   backends: [:console],
   level: :debug
-
-config :exq,
-  name: Exq,
-  host: "127.0.0.1",
-  port: 6379,
-  namespace: "exq",
-  concurrency: :infinite,
-  start_on_application: false,
-  queues: ["dead_letter_queue"],
-  poll_timeout: 50,
-  scheduler_poll_timeout: 200,
-  scheduler_enable: true,
-  max_retries: 100,
-  shutdown_timeout: 5000
