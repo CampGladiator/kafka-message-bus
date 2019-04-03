@@ -1,5 +1,5 @@
 defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
-  alias KafkaMessageBus.ConsumerHandler
+  alias KafkaMessageBus.{ConsumerHandler, Utils}
 
   require Logger
 
@@ -12,12 +12,16 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
     |> Jason.decode()
     |> configure_logger()
     |> run_consumers(message.topic)
+
+    Utils.clear_log_metadata()
+
+    :ok
   end
 
-  defp configure_logger({:ok, contents} = mesasge) do
-    Logger.metadata(request_id: contents["request_id"])
+  defp configure_logger({:ok, message} = result) do
+    Utils.set_log_metadata(message)
 
-    mesasge
+    result
   end
 
   defp configure_logger({:error, _reason} = message) do
@@ -27,7 +31,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
   defp run_consumers({:ok, contents}, topic) do
     case get_consumers_for(topic, contents["resource"]) do
       [] ->
-        Logger.error(fn ->
+        Logger.info(fn ->
           "No consumers configured for #{topic}/#{contents["resource"]}"
         end)
 

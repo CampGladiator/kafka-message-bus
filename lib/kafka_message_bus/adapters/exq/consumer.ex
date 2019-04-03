@@ -1,5 +1,5 @@
 defmodule KafkaMessageBus.Adapters.Exq.Consumer do
-  alias KafkaMessageBus.ConsumerHandler
+  alias KafkaMessageBus.{ConsumerHandler, Utils}
 
   require Logger
 
@@ -8,6 +8,13 @@ defmodule KafkaMessageBus.Adapters.Exq.Consumer do
       "Received Exq message"
     end)
 
+    Utils.set_log_metadata(message)
+
     :ok = ConsumerHandler.perform(module, message)
+  rescue
+    e ->
+      Utils.clear_log_metadata()
+
+      raise e
   end
 end
