@@ -8,6 +8,8 @@ defmodule KafkaMessageBus.Adapters.Exq.Consumer do
       "Received Exq message"
     end)
 
+    message = Poison.decode!(message)
+
     Utils.set_log_metadata(message)
 
     :ok = ConsumerHandler.perform(module, message)

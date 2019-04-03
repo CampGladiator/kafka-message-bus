@@ -22,6 +22,7 @@ defmodule KafkaMessageBus.Adapters.TestAdapter do
 
   def produce(message, opts) do
     topic = Keyword.get(opts, :topic, Config.default_topic())
+    message = Poison.encode!(message)
 
     if topic in Agent.get(__MODULE__, & &1.producers) do
       key = self()

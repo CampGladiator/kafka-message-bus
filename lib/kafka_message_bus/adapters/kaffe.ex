@@ -33,7 +33,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
     topic = Keyword.get(opts, :topic, Config.default_topic())
     key = Keyword.get(opts, :key)
 
-    message = Jason.encode!(message)
+    message = Poison.encode!(message)
 
     Producer.produce_sync(topic, [{key, message}])
   end

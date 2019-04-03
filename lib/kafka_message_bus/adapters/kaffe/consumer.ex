@@ -9,7 +9,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
     end)
 
     message.value
-    |> Jason.decode()
+    |> Poison.decode()
     |> configure_logger()
     |> run_consumers(message.topic)
 
@@ -24,8 +24,8 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
     result
   end
 
-  defp configure_logger({:error, _reason} = message) do
-    message
+  defp configure_logger({:error, _reason} = result) do
+    result
   end
 
   defp run_consumers({:ok, contents}, topic) do
