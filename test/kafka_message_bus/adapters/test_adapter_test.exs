@@ -5,6 +5,22 @@ defmodule KafkaMessageBus.Adapters.TestAdapterTest do
 
   @moduletag :capture_log
 
+  describe "producing behaviour" do
+    test "it should always serialize messages" do
+      message = %{"some" => :data, more: 123}
+
+      KafkaMessageBus.produce(message, "key", "resource", "action")
+
+      [%{"data" => produced_message}] = TestAdapter.get_produced_messages()
+
+      refute produced_message["some"] == :data
+      assert produced_message["some"] == "data"
+
+      assert is_nil(produced_message[:more])
+      assert produced_message["more"] == 123
+    end
+  end
+
   describe "getting specific produced messages" do
     test "it should return an empty list if no messages are produced with filters" do
       messages =
