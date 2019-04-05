@@ -13,7 +13,7 @@ defmodule KafkaMessageBus.Adapters.TestAdapterTest do
       assert Enum.empty?(messages)
     end
 
-    test "it should return all matching produced messages when using filters" do
+    test "it should return all produced messages that match a filter" do
       first_message = %{"some" => "data"}
       second_message = %{"data" => "again"}
       third_message = %{"more" => "data"}
@@ -34,6 +34,37 @@ defmodule KafkaMessageBus.Adapters.TestAdapterTest do
       assert first_message in messages_contents
       assert second_message in messages_contents
       refute third_message in messages_contents
+    end
+
+    test "it should return all matching produced messages when using different filters" do
+      first_message = %{"some" => "data"}
+      second_message = %{"data" => "again"}
+      third_message = %{"more" => "data"}
+
+      KafkaMessageBus.produce(first_message, "key", "some_resource", "some_action")
+      KafkaMessageBus.produce(second_message, "key", "another_resource", "some_action")
+      KafkaMessageBus.produce(third_message, "key", "another_resource", "another_action")
+
+      assert [%{"data" => ^first_message}] =
+               TestAdapter.get_produced_messages(
+                 "default_topic",
+                 "some_resource",
+                 "some_action"
+               )
+
+      assert [%{"data" => ^second_message}] =
+               TestAdapter.get_produced_messages(
+                 "default_topic",
+                 "another_resource",
+                 "some_action"
+               )
+
+      assert [%{"data" => ^third_message}] =
+               TestAdapter.get_produced_messages(
+                 "default_topic",
+                 "another_resource",
+                 "another_action"
+               )
     end
 
     test "it should only provide matching messages created by the current process" do
