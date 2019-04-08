@@ -5,7 +5,7 @@ defmodule KafkaMessageBus do
     Producer.produce(data, key, resource, action, opts)
   end
 
-  defp producer(opts) do
+  def producer(opts) do
     {resource, opts} = Keyword.pop(opts, :resource)
 
     quote do
