@@ -4,7 +4,6 @@ defmodule KafkaMessageBus.Mixfile do
   def project do
     [
       app: :kafka_message_bus,
-      included_applications: included_applications(),
       version: "4.0.0-rc.5",
       elixir: "~> 1.7",
       build_embedded: Mix.env() == :prod,
@@ -43,14 +42,11 @@ defmodule KafkaMessageBus.Mixfile do
 
   def application do
     [
-      mod: {KafkaMessageBus.Application, []}
-    ]
-  end
-
-  defp included_applications() do
-    [
-      :kaffe,
-      :exq
+      mod: {KafkaMessageBus.Application, []},
+      included_applications: [
+        :kaffe,
+        :exq
+      ]
     ]
   end
 
