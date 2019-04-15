@@ -62,7 +62,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
           }"
         end)
 
-        message = %{"message" => message, "consumer" => consumer, "previous_error" => reason}
+        message = %{"message" => message, "consumer" => consumer, "previous_error" => inspect(reason)}
 
         KafkaMessageBus.produce(message, nil, "failure", "retry", topic: "dead_letter_queue")
     end
