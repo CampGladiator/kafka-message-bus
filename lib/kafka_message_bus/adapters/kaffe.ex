@@ -39,39 +39,61 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
   end
 
   defp to_kaffe_config(config) do
+    [
+      kafka_mod: :brod,
+      app_consumers: config[:consumers]
+    ]
+    |> add_consumer_config(config)
+    |> add_producer_config(config)
+  end
+
+  defp add_consumer_config(base_config, external_config) do
     consumer_topics =
-      config[:consumers]
+      external_config[:consumers]
       |> Enum.map(fn entry ->
         entry
         |> Tuple.to_list()
         |> List.first()
       end)
       |> Enum.uniq()
+      |> case do
+        [] -> [List.first(external_config[:producers])]
+        other -> other
+      end
 
-    [
-      consumer: [
-        heroku_kafka_env: false,
-        endpoints: config[:endpoints],
-        topics: consumer_topics,
-        consumer_group: config[:namespace],
-        message_handler: Consumer,
-        async_message_ack: false,
-        offset_commit_interval_seconds: 10,
-        start_with_earliest_message: false,
-        rebalance_delay_ms: 100,
-        max_bytes: 10_000,
-        subscriber_retries: 5,
-        subscriber_retry_delay_ms: 5,
-        worker_allocation_strategy: :worker_per_topic_partition
-      ],
-      producer: [
-        partition_strategy: :md5,
-        endpoints: config[:endpoints],
-        topics: config[:producers]
-      ],
-      kafka_mod: :brod,
-      app_consumers: config[:consumers]
-    ]
+    base_config ++
+      [
+        consumer: [
+          heroku_kafka_env: false,
+          endpoints: external_config[:endpoints],
+          topics: consumer_topics,
+          consumer_group: external_config[:namespace],
+          message_handler: Consumer,
+          async_message_ack: false,
+          offset_commit_interval_seconds: 10,
+          start_with_earliest_message: false,
+          rebalance_delay_ms: 100,
+          max_bytes: 10_000,
+          subscriber_retries: 5,
+          subscriber_retry_delay_ms: 5,
+          worker_allocation_strategy: :worker_per_topic_partition
+        ]
+      ]
+  end
+
+  defp add_producer_config(base_config, external_config) do
+    if external_config[:producers] == [] do
+      base_config
+    else
+      base_config ++
+        [
+          producer: [
+            partition_strategy: :md5,
+            endpoints: external_config[:endpoints],
+            topics: external_config[:producers]
+          ]
+        ]
+    end
   end
 
   defp apply_kaffe_config(config) do
