@@ -64,7 +64,7 @@ defmodule KafkaMessageBus.Adapters.Exq do
       end)
 
     [
-      concurrency: :infinite,
+      concurrency: 600,
       host: Atom.to_string(host),
       max_retries: 100,
       name: Exq,
