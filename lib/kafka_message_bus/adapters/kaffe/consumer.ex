@@ -24,7 +24,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
     result
   end
 
-  defp configure_logger({:error, _reason} = result) do
+  defp configure_logger(result) do
     result
   end
 
@@ -40,7 +40,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
     end
   end
 
-  defp run_consumers({:error, message}, topic) do
+  defp run_consumers(message, topic) do
     Logger.error(fn ->
       "Failed to decode Kaffe message on topic #{topic}: #{inspect(message)}"
     end)
