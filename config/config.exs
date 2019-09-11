@@ -15,7 +15,8 @@ config :kafka_message_bus, KafkaMessageBus.Adapters.Exq,
   ],
   producers: ["job_queue", "dead_letter_queue"],
   endpoints: [localhost: 6379],
-  namespace: "message_bus_namespace"
+  namespace: "message_bus_namespace",
+  concurrency: 3
 
 config :kafka_message_bus, KafkaMessageBus.Adapters.Kaffe,
   consumers: [
