@@ -56,12 +56,7 @@ defmodule KafkaMessageBus.Adapters.Exq do
   defp to_exq_config(config) do
     [{host, port} | _] = config[:endpoints]
 
-    queues =
-      Enum.map(config[:consumers], fn entry ->
-        entry
-        |> Tuple.to_list()
-        |> List.first()
-      end)
+    queues = Enum.map(config[:consumers], &queue_from_consumer/1)
 
     [
       concurrency: config[:concurrency] || 600,
@@ -78,6 +73,15 @@ defmodule KafkaMessageBus.Adapters.Exq do
       start_on_application: false,
       consumers: config[:consumers]
     ]
+  end
+
+  defp queue_from_consumer({queue, _resource, _worker}), do: queue
+
+  defp queue_from_consumer({queue, _resource, _worker, opts}) do
+    case opts[:concurrency] do
+      nil -> queue
+      value -> {queue, value}
+    end
   end
 
   defp apply_exq_config(config) do

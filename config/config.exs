@@ -11,12 +11,12 @@ config :kafka_message_bus,
 config :kafka_message_bus, KafkaMessageBus.Adapters.Exq,
   consumers: [
     {"job_queue", "job_resource", KafkaMessageBusTest.Adapters.Exq.CustomJobConsumer},
-    {"dead_letter_queue", nil, KafkaMessageBus.Adapters.Exq.DeadLetterQueueConsumer}
+    {"dead_letter_queue", nil, KafkaMessageBus.Adapters.Exq.DeadLetterQueueConsumer, concurrency: 600}
   ],
   producers: ["job_queue", "dead_letter_queue"],
   endpoints: [localhost: 6379],
   namespace: "message_bus_namespace",
-  concurrency: 3
+  concurrency: 100
 
 config :kafka_message_bus, KafkaMessageBus.Adapters.Kaffe,
   consumers: [
