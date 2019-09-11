@@ -39,6 +39,9 @@ defmodule KafkaMessageBus.Adapters.Exq do
       {^topic, ^resource, module} ->
         [module]
 
+      {^topic, ^resource, module, _opts} ->
+        [module]
+
       _ ->
         []
     end)
