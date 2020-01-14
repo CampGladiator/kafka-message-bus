@@ -1,4 +1,7 @@
 defmodule KafkaMessageBus.Adapter do
+  @moduledoc """
+  This defines behaviors for message bus adapters.
+  """
   @type config :: Map.t()
   @type reason :: any()
   @type message :: Map.t()

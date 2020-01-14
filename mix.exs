@@ -56,15 +56,14 @@ defmodule KafkaMessageBus.Mixfile do
       {:exq, "~> 0.12.1"},
       {:poison, "~> 3.0"},
       {:ex_doc, "~> 0.20.0"},
-      {:credo, "~> 1.0", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:faker, "~> 0.13", only: :test}
     ]
   end
 
   defp aliases do
     [
-      lint: [
-        "credo suggest --ignore-checks moduledoc,aliasusage,maxlinelength,aliasorder --strict"
-      ]
+      lint: ["credo --strict"]
     ]
   end
 end

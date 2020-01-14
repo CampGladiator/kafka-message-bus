@@ -51,3 +51,24 @@ config :kafka_message_bus, KafkaMessageBus.Adapters.Kaffe,
   endpoints: ["first-broker": 9092, "second-broker": 9092],
   namespace: "kafka_consumer_group"
 ```
+
+The kafka_message_bus supports injecting message data validators to enforce 
+message contracts on data passed through the bus. There is no message data 
+validation by default and the related configuration settings are not required.
+
+To control which message contracts are enforced use the following 
+configuration settings:
+```elixir
+config :kafka_message_bus, :message_contracts, validation_exclusions: :none
+```
+Will enforce all message contracts.
+```elixir
+config :kafka_message_bus, :message_contracts, validation_exclusions: :all
+```
+Will exclude all message contract enforcement. Message processing 
+will continue to work as it has in the past. 
+```elixir
+config :kafka_message_bus, :message_contracts, 
+validation_exclusions: [MessageDataImplementation1, MessageDataImplementation2]
+```
+Will exclude message_contracts by name.

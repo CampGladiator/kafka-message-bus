@@ -1,4 +1,8 @@
 defmodule KafkaMessageBus.Application do
+  @moduledoc """
+  Application module for KafkaMessageBus. This kicks off the supervisor for
+  the app using the one_for_one strategy (restart failed processes only).
+  """
   alias KafkaMessageBus.Config
 
   use Application

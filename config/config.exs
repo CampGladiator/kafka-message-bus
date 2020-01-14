@@ -11,7 +11,8 @@ config :kafka_message_bus,
 config :kafka_message_bus, KafkaMessageBus.Adapters.Exq,
   consumers: [
     {"job_queue", "job_resource", KafkaMessageBusTest.Adapters.Exq.CustomJobConsumer},
-    {"dead_letter_queue", nil, KafkaMessageBus.Adapters.Exq.DeadLetterQueueConsumer, concurrency: 600}
+    {"dead_letter_queue", nil, KafkaMessageBus.Adapters.Exq.DeadLetterQueueConsumer,
+     concurrency: 600}
   ],
   producers: ["job_queue", "dead_letter_queue"],
   endpoints: [localhost: 6379],
@@ -25,6 +26,8 @@ config :kafka_message_bus, KafkaMessageBus.Adapters.Kaffe,
   producers: ["another_topic"],
   endpoints: [localhost: 9092],
   namespace: "message_bus_consumer_group"
+
+config :kafka_message_bus, :message_contracts, exclusions: :all
 
 config :exq,
   start_on_application: false

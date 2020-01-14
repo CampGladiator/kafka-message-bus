@@ -1,4 +1,7 @@
 defmodule KafkaMessageBus.Adapters.TestAdapter do
+  @moduledoc """
+  This is an Adapter implementation that can be used in testing contexts instead of Kafka directly.
+  """
   @behaviour KafkaMessageBus.Adapter
 
   use Agent

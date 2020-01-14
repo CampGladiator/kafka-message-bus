@@ -1,4 +1,7 @@
 defmodule KafkaMessageBus.Config do
+  @moduledoc """
+  A set of functions that help retrieve config data.
+  """
   @lib_name :kafka_message_bus
 
   def get_adapters do
