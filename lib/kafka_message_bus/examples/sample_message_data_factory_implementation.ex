@@ -1,5 +1,10 @@
 defmodule KafkaMessageBus.Examples.SampleMessageDataFactoryImplementation do
   @moduledoc """
+  A set of functions that takes resource, action, and data as parameters and returns an
+  instance of the appropriate message data struct. Each message data type will support a
+  function new/1 that is a struct representation of the map data that it received. These
+  new/1 functions do not alter or validate the data field values.
+
   This is an example of a message data factory implementation. One of these must
   defined and wired into the validator through the config (see: test.config for
   an example).
