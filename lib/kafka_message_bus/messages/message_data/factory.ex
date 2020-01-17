@@ -63,20 +63,18 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
   end
 
   defp do_create!(data, resource, action, factory_implementation) do
-    try do
-      factory_implementation.on_create(data, resource, action)
-    rescue
-      err in UndefinedFunctionError ->
-        case err.function do
-          :on_create ->
-            err_message = "Missing on_create/3 function in factory_implementation: #{err.module}"
-            Logger.error(fn -> err_message <> ", error: #{inspect(err)}" end)
-            raise err_message
+    factory_implementation.on_create(data, resource, action)
+  rescue
+    err in UndefinedFunctionError ->
+      case err.function do
+        :on_create ->
+          err_message = "Missing on_create/3 function in factory_implementation: #{err.module}"
+          Logger.error(fn -> err_message <> ", error: #{inspect(err)}" end)
+          Kernel.reraise(err_message)
 
-          e ->
-            e
-        end
-    end
+        e ->
+          e
+      end
   end
 
   def get_message_contract_exclusions,

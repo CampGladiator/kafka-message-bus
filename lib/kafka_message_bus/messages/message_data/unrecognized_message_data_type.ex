@@ -1,4 +1,7 @@
 defmodule KafkaMessageBus.Messages.MessageData.UnrecognizedMessageDataType do
+  @moduledoc """
+  This is the module that handles unrecognized messages (based on resource and action).
+  """
   def on_create do
     quote do
       def on_create(data, resource, action) when is_binary(resource) and is_binary(action) do
