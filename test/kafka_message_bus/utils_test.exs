@@ -2,6 +2,7 @@ defmodule KafkaMessageBus.UtilsTest do
   use ExUnit.Case
   import ExUnit.CaptureLog
   alias KafkaMessageBus.Messages.MessageData.MapUtil
+  alias KafkaMessageBus.Utils
   require Logger
 
   describe "to_module_short_name" do
