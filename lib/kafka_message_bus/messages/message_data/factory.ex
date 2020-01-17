@@ -70,7 +70,8 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
         :on_create ->
           err_message = "Missing on_create/3 function in factory_implementation: #{err.module}"
           Logger.error(fn -> err_message <> ", error: #{inspect(err)}" end)
-          Kernel.reraise(err_message)
+
+          reraise err, __STACKTRACE__
 
         e ->
           e

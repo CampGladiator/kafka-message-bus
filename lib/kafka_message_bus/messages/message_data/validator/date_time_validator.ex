@@ -3,8 +3,8 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.DateTimeValidator do
   Provides checks for datetime, date, and time fields.
   """
   import KafkaMessageBus.Messages.MessageData.Validator.Response
+  alias KafkaMessageBus.Messages.MessageData.MapUtil
   alias KafkaMessageBus.Messages.MessageData.Validator.RequiredValidator
-  alias KafkaMessageBus.Utils
   require Logger
 
   def is_valid_date_time_utc(message_data, field_name, required?),
@@ -31,7 +31,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.DateTimeValidator do
   defp invalid_date_msg(Time), do: :invalid_time
 
   def from_iso8601(date_type, message_data, field_name) when is_map(message_data) do
-    datetime = Utils.safe_get(message_data, field_name)
+    datetime = MapUtil.safe_get(message_data, field_name)
 
     case(from_iso8601(date_type, datetime)) do
       {:ok, value, _} ->

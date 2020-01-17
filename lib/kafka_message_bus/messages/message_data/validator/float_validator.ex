@@ -3,8 +3,8 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.FloatValidator do
   Provides checks for float fields.
   """
   import KafkaMessageBus.Messages.MessageData.Validator.Response
+  alias KafkaMessageBus.Messages.MessageData.MapUtil
   alias KafkaMessageBus.Messages.MessageData.Validator.RequiredValidator
-  alias KafkaMessageBus.Utils
 
   def is_float(message_data, field_name, :not_required),
     do: is_float(message_data, field_name)
@@ -16,7 +16,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.FloatValidator do
   end
 
   defp is_float(message_data, field_name) do
-    value = Utils.safe_get(message_data, field_name)
+    value = MapUtil.safe_get(message_data, field_name)
 
     case value do
       value when is_float(value) ->
@@ -32,7 +32,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.FloatValidator do
         parse_float(value, field_name, message_data)
 
       _ ->
-        {:error, {:not_a_float, field_name, Utils.safe_get(message_data, field_name)}}
+        {:error, {:not_a_float, field_name, MapUtil.safe_get(message_data, field_name)}}
     end
   end
 
@@ -42,7 +42,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.FloatValidator do
         ok(field_name, parsed_val)
 
       _ ->
-        {:error, {:not_a_float, field_name, Utils.safe_get(message_data, field_name)}}
+        {:error, {:not_a_float, field_name, MapUtil.safe_get(message_data, field_name)}}
     end
   end
 end

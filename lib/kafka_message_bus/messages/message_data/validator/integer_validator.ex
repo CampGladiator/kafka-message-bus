@@ -3,8 +3,8 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.IntegerValidator do
   Provides checks for integer fields.
   """
   import KafkaMessageBus.Messages.MessageData.Validator.Response
+  alias KafkaMessageBus.Messages.MessageData.MapUtil
   alias KafkaMessageBus.Messages.MessageData.Validator.RequiredValidator
-  alias KafkaMessageBus.Utils
 
   def is_integer(message_data, field_name, :not_required),
     do: is_integer(message_data, field_name)
@@ -16,7 +16,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.IntegerValidator do
   end
 
   defp is_integer(message_data, field_name) do
-    case Utils.safe_get(message_data, field_name) do
+    case MapUtil.safe_get(message_data, field_name) do
       value when is_integer(value) ->
         ok()
 
@@ -32,7 +32,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.IntegerValidator do
         parse_integer(value, field_name, message_data)
 
       _ ->
-        {:error, {:not_an_integer, field_name, Utils.safe_get(message_data, field_name)}}
+        {:error, {:not_an_integer, field_name, MapUtil.safe_get(message_data, field_name)}}
     end
   end
 
@@ -42,7 +42,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.IntegerValidator do
         ok(field_name, int_val)
 
       _ ->
-        {:error, {:not_an_integer, field_name, Utils.safe_get(message_data, field_name)}}
+        {:error, {:not_an_integer, field_name, MapUtil.safe_get(message_data, field_name)}}
     end
   end
 end

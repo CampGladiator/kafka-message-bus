@@ -3,7 +3,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.RequiredValidator do
   Provides checks for required fields.
   """
   import KafkaMessageBus.Messages.MessageData.Validator.Response
-  alias KafkaMessageBus.Utils
+  alias KafkaMessageBus.Messages.MessageData.MapUtil
 
   def required(message_data, fields) when is_list(fields) do
     if Enum.any?(fields) do
@@ -33,7 +33,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.RequiredValidator do
 
   defp contains_fields?(message_data, fields) when is_map(message_data) do
     Enum.reduce(fields, false, fn field, acc ->
-      acc or not (message_data |> Utils.safe_get(field) |> is_nil)
+      acc or not (message_data |> MapUtil.safe_get(field) |> is_nil)
     end)
   end
 

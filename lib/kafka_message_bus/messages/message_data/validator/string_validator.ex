@@ -3,8 +3,8 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.StringValidator do
   Provides checks for string fields.
   """
   import KafkaMessageBus.Messages.MessageData.Validator.Response
+  alias KafkaMessageBus.Messages.MessageData.MapUtil
   alias KafkaMessageBus.Messages.MessageData.Validator.RequiredValidator
-  alias KafkaMessageBus.Utils
 
   def is_string(message_data, field_name, is_required, valid_values \\ [])
       when is_atom(is_required) and is_list(valid_values),
@@ -20,7 +20,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.StringValidator do
   end
 
   defp do_is_string(message_data, field_name, valid_values) when is_list(valid_values) do
-    value = Utils.safe_get(message_data, field_name)
+    value = MapUtil.safe_get(message_data, field_name)
 
     if is_nil(value) or String.valid?(value) do
       if has_valid_value(value, valid_values),

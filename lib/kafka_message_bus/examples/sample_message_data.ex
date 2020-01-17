@@ -27,8 +27,8 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
   require Logger
   import KafkaMessageBus.Messages.MessageData.Validator
   alias KafkaMessageBus.Messages.MessageData
+  alias KafkaMessageBus.Messages.MessageData.MapUtil
   alias __MODULE__
-  alias KafkaMessageBus.Utils
 
   defstruct id: nil,
             field1: nil,
@@ -38,10 +38,10 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
   def new(%{} = message_data) do
     {:ok,
      %SampleMessageData{
-       id: Utils.safe_get(message_data, :id),
-       field1: Utils.safe_get(message_data, :field1),
-       field2: Utils.safe_get(message_data, :field2),
-       field3: Utils.safe_get(message_data, :field3)
+       id: MapUtil.safe_get(message_data, :id),
+       field1: MapUtil.safe_get(message_data, :field1),
+       field2: MapUtil.safe_get(message_data, :field2),
+       field3: MapUtil.safe_get(message_data, :field3)
      }}
   end
 

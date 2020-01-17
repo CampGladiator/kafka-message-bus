@@ -6,7 +6,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator do
   import KafkaMessageBus.Messages.MessageData.Validator.Response
 
   require Logger
-  alias KafkaMessageBus.Utils
+  alias KafkaMessageBus.Messages.MessageData.MapUtil
 
   alias KafkaMessageBus.Messages.MessageData.Validator.{
     BooleanValidator,
@@ -100,7 +100,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator do
 
   defp do_nested_validation(validation_functions, message_data, parent_name)
        when is_atom(parent_name) do
-    case Utils.safe_get(message_data, parent_name) do
+    case MapUtil.safe_get(message_data, parent_name) do
       nil ->
         ok()
 
@@ -138,13 +138,13 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator do
   defp apply_change_suggestions([], _suggested_changes, message_data), do: message_data
 
   defp get_suggested_value(change_key, suggested_changes, message_data) do
-    case Utils.safe_get(suggested_changes, change_key) do
+    case MapUtil.safe_get(suggested_changes, change_key) do
       %{__struct__: _} = value ->
         value
 
       value when is_map(value) ->
-        nested_suggestions = Utils.safe_get(suggested_changes, change_key)
-        nested_message_data = Utils.safe_get(message_data, change_key)
+        nested_suggestions = MapUtil.safe_get(suggested_changes, change_key)
+        nested_message_data = MapUtil.safe_get(message_data, change_key)
 
         nested_suggestions
         |> Map.keys()

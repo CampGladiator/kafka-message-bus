@@ -3,8 +3,8 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.BooleanValidator do
   Provides checks for boolean fields.
   """
   import KafkaMessageBus.Messages.MessageData.Validator.Response
+  alias KafkaMessageBus.Messages.MessageData.MapUtil
   alias KafkaMessageBus.Messages.MessageData.Validator.RequiredValidator
-  alias KafkaMessageBus.Utils
 
   def is_boolean(message_data, field_name, :not_required),
     do: is_boolean(message_data, field_name)
@@ -16,7 +16,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.BooleanValidator do
   end
 
   defp is_boolean(message_data, field_name) do
-    value = Utils.safe_get(message_data, field_name)
+    value = MapUtil.safe_get(message_data, field_name)
 
     case value do
       value when is_boolean(value) ->
@@ -39,7 +39,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator.BooleanValidator do
         ok(field_name, parsed_val == "true")
 
       _ ->
-        {:error, {:not_a_boolean, field_name, Utils.safe_get(message_data, field_name)}}
+        {:error, {:not_a_boolean, field_name, MapUtil.safe_get(message_data, field_name)}}
     end
   end
 end
