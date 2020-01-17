@@ -17,18 +17,26 @@ defmodule KafkaMessageBus.Messages.MessageData.FactoryTest do
     end
 
     test "exclusions list returns message to bypass message enforcement on factory match" do
-      {:ok, sample_data} =
-        Factory.create(%{}, "sample_resource", "sample_action", [SampleMessageData])
+      fun = fn ->
+        {:ok, sample_data} =
+          Factory.create(%{}, "sample_resource", "sample_action", [SampleMessageData])
 
-      assert sample_data == :message_contract_excluded
+        assert sample_data == :message_contract_excluded
+      end
+
+      assert capture_log(fun) =~ "[info]  creating for sample_resource and sample_action: %{}"
     end
 
     test "missing new/1 function defined" do
-      assert_raise RuntimeError,
-                   "Missing on_create/3 function in factory_implementation: Elixir.KafkaMessageBus.Messages.MessageData.Factory",
-                   fn ->
-                     Factory.create(%{}, "sample_resource", "sample_action", [], Factory)
-                   end
+      fun = fn ->
+        assert_raise RuntimeError,
+                     "Missing on_create/3 function in factory_implementation: Elixir.KafkaMessageBus.Messages.MessageData.Factory",
+                     fn ->
+                       Factory.create(%{}, "sample_resource", "sample_action", [], Factory)
+                     end
+      end
+
+      assert capture_log(fun) =~ "[info]  creating for sample_resource and sample_action: %{}"
     end
 
     test "should return error if invalid input provided" do

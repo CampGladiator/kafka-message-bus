@@ -10,17 +10,22 @@ defmodule KafkaMessageBus.MessageDataValidatorTest do
       "field2" => "2019-12-19 19:22:26.779098Z",
       "field3" => "42"
     }
+
     resource = "sample_resource"
     action = "sample_action"
     message = %{"data" => message_data, "action" => action, "resource" => resource}
 
-    {:ok, validated_message} = MessageDataValidator.validate(message)
+    fun = fn ->
+      {:ok, validated_message} = MessageDataValidator.validate(message)
 
-    assert validated_message.id == "ID_1"
-    assert validated_message.field1 == "the text"
-    {:ok, datetime1, _} = DateTime.from_iso8601("2019-12-19 19:22:26.779098Z")
-    assert validated_message.field2 == datetime1
-    assert validated_message.field3 == 42
+      assert validated_message.id == "ID_1"
+      assert validated_message.field1 == "the text"
+      {:ok, datetime1, _} = DateTime.from_iso8601("2019-12-19 19:22:26.779098Z")
+      assert validated_message.field2 == datetime1
+      assert validated_message.field3 == 42
+    end
+
+    assert capture_log(fun) =~ "[info]  creating for sample_resource and sample_action:"
   end
 
   test "passes errors through" do
