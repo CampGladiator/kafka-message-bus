@@ -25,7 +25,7 @@ defmodule KafkaMessageBus.MessageDataValidatorTest do
       assert validated_message.field3 == 42
     end
 
-    assert capture_log(fun) =~ "[info]  creating for sample_resource and sample_action:"
+    assert capture_log(fun) =~ "[info]  Creating for sample_resource and sample_action:"
   end
 
   test "passes errors through" do

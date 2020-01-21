@@ -24,19 +24,19 @@ defmodule KafkaMessageBus.Messages.MessageData.FactoryTest do
         assert sample_data == :message_contract_excluded
       end
 
-      assert capture_log(fun) =~ "[info]  creating for sample_resource and sample_action: %{}"
+      assert capture_log(fun) =~ "[info]  Creating for sample_resource and sample_action: %{}"
     end
 
     test "missing new/1 function defined" do
       fun = fn ->
-        assert_raise RuntimeError,
-                     "Missing on_create/3 function in factory_implementation: Elixir.KafkaMessageBus.Messages.MessageData.Factory",
+        assert_raise UndefinedFunctionError,
+                     "function KafkaMessageBus.Messages.MessageData.Factory.on_create/3 is undefined or private",
                      fn ->
                        Factory.create(%{}, "sample_resource", "sample_action", [], Factory)
                      end
       end
 
-      assert capture_log(fun) =~ "[info]  creating for sample_resource and sample_action: %{}"
+      assert capture_log(fun) =~ "[error] Missing on_create/3 function in factory_implementation: Elixir.KafkaMessageBus.Messages.MessageData.Factory"
     end
 
     test "should return error if invalid input provided" do

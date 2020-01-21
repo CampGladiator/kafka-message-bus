@@ -6,7 +6,6 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
   new/1 functions do not alter or validate the data field values.
   """
 
-  alias KafkaMessageBus.Messages.MessageData.MessageDataFactory
   require Logger
 
   @doc """
@@ -86,29 +85,4 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
       Application.get_env(:kafka_message_bus, :message_contracts)[
         :message_data_factory_implementation
       ]
-
-  defp on_create(data, resource, action) when is_binary(resource) and is_binary(action) do
-    fn ->
-      "Encountered unrecognized message type for resource: #{resource}, action: #{action}. #{
-        inspect(data)
-      }"
-    end
-    |> Logger.warn()
-
-    {:error, :unrecognized_message_data_type}
-  end
-
-  defp on_create(data, resource, action, exclusions) when is_list(exclusions) do
-    case on_create(data, resource, action) do
-      {:ok, data} ->
-        if data.__struct__ in exclusions, do: {:ok, :message_contract_excluded}, else: data
-
-      {:error, :unrecognized_message_data_type} ->
-        {:error, :unrecognized_message_data_type}
-
-      err ->
-        Logger.info(fn -> "Unexpected error encountered: #{inspect(err)}" end)
-        err
-    end
-  end
 end

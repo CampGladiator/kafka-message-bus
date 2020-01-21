@@ -26,7 +26,7 @@ defmodule KafkaMessageBus.Examples.SampleMessageDataFactoryImplementation do
   require Logger
 
   def on_create(%{} = data, "sample_resource", "sample_action") do
-    Logger.info(fn -> "creating for sample_resource and sample_action: #{inspect(data)}" end)
+    Logger.info(fn -> "Creating for sample_resource and sample_action: #{inspect(data)}" end)
     SampleMessageData.new(data)
   end
 

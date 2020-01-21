@@ -25,7 +25,6 @@ defmodule KafkaMessageBus.Producer do
           produce(message_data, key, resource, action, opts, topic)
 
         {:error, [] = validation_errors} ->
-          # TODO: return exception or error tuple based on config setting.
           Logger.error(fn ->
             "Validation failed for message_data production: #{inspect(validation_errors)}\n#{
               produce_info
@@ -56,7 +55,6 @@ defmodule KafkaMessageBus.Producer do
       topic_adapters_not_found(topic)
     end
   rescue
-    # TODO: return exception instead
     err ->
       Logger.error(fn -> "Unhandled error encountered in Producer.produce/5: #{inspect(err)}" end)
       {:error, err}
