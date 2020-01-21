@@ -56,19 +56,35 @@ The kafka_message_bus supports injecting message data validators to enforce
 message contracts on data passed through the bus. There is no message data 
 validation by default and the related configuration settings are not required.
 
+The following configuration is required for message validation support. The
+user must provide a message data factory implementation that presents n number
+of on_create/3 functions. Each on_create function will invoke message_data 
+new/1 function for a message data struct that also implements the MessageData
+validate/1 function. This project includes a SampleMessageDataFactoryImplementation
+that illustrates how to write one of these factory implementation modules.
+
+```elixir
+config :kafka_message_bus, :message_contracts,
+  message_data_factory_implementation:
+    KafkaMessageBus.Examples.SampleMessageDataFactoryImplementation
+```
+
 To control which message contracts are enforced use the following 
 configuration settings:
+
 ```elixir
-config :kafka_message_bus, :message_contracts, validation_exclusions: :none
+config :kafka_message_bus, :message_contracts, exclusions: :none
 ```
 Will enforce all message contracts.
+
 ```elixir
-config :kafka_message_bus, :message_contracts, validation_exclusions: :all
+config :kafka_message_bus, :message_contracts, exclusions: :all
 ```
 Will exclude all message contract enforcement. Message processing 
 will continue to work as it has in the past. 
+
 ```elixir
 config :kafka_message_bus, :message_contracts, 
-validation_exclusions: [MessageDataImplementation1, MessageDataImplementation2]
+  exclusions: [MessageDataImplementation1, MessageDataImplementation2]
 ```
 Will exclude message_contracts by name.
