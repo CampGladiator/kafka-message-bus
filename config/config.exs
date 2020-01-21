@@ -27,8 +27,6 @@ config :kafka_message_bus, KafkaMessageBus.Adapters.Kaffe,
   endpoints: [localhost: 9092],
   namespace: "message_bus_consumer_group"
 
-config :kafka_message_bus, :message_contracts, exclusions: :all
-
 config :exq,
   start_on_application: false
 

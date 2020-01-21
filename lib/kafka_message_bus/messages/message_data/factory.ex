@@ -29,7 +29,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
       ) do
     case message_contract_exclusions do
       :none ->
-        do_create!(data, resource, action, factory_implementation)
+        on_create(data, resource, action, factory_implementation)
 
       :all ->
         {:ok, :message_contract_excluded}
@@ -46,9 +46,12 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
     end
   end
 
+  defp on_create(_data, _resource, _action, _exclusions, nil),
+    do: {:error, :missing_factory_implementation}
+
   defp on_create(data, resource, action, exclusions, factory_implementation)
        when is_list(exclusions) do
-    case do_create!(data, resource, action, factory_implementation) do
+    case on_create(data, resource, action, factory_implementation) do
       {:ok, data} ->
         if data.__struct__ in exclusions, do: {:ok, :message_contract_excluded}, else: data
 
@@ -61,7 +64,9 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
     end
   end
 
-  defp do_create!(data, resource, action, factory_implementation) do
+  defp on_create(_data, _resource, _action, nil), do: {:error, :missing_factory_implementation}
+
+  defp on_create(data, resource, action, factory_implementation) do
     factory_implementation.on_create(data, resource, action)
   rescue
     err in UndefinedFunctionError ->
@@ -77,8 +82,12 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
       end
   end
 
-  def get_message_contract_exclusions,
-    do: Application.get_env(:kafka_message_bus, :message_contracts)[:exclusions]
+  def get_message_contract_exclusions do
+    case Application.get_env(:kafka_message_bus, :message_contracts)[:exclusions] do
+      nil -> :all
+      found -> found
+    end
+  end
 
   def get_factory_implementation,
     do:

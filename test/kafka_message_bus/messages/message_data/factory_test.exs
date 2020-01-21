@@ -36,7 +36,8 @@ defmodule KafkaMessageBus.Messages.MessageData.FactoryTest do
                      end
       end
 
-      assert capture_log(fun) =~ "[error] Missing on_create/3 function in factory_implementation: Elixir.KafkaMessageBus.Messages.MessageData.Factory"
+      assert capture_log(fun) =~
+               "[error] Missing on_create/3 function in factory_implementation: Elixir.KafkaMessageBus.Messages.MessageData.Factory"
     end
 
     test "should return error if invalid input provided" do
