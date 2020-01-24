@@ -2,7 +2,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator2Test do
   use ExUnit.Case
   import Ecto.Changeset
   alias KafkaMessageBus.Messages.MessageData.Validator
-  alias KafkaMessageBus.Examples.SampleMessageData2
+  alias KafkaMessageBus.Examples.SampleMessageData
 
  test "this" do
     data = %{
@@ -13,7 +13,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator2Test do
       "field3" => "234"
     }
 
-    changeset = SampleMessageData2.changeset(%SampleMessageData2{}, data)
+    changeset = SampleMessageData.changeset(%SampleMessageData{}, data)
     {:ok, field3_val, _} = DateTime.from_iso8601("2019-10-11 10:09:08Z")
 
     assert changeset.valid?
