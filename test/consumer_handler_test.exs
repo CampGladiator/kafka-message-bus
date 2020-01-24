@@ -59,7 +59,7 @@ defmodule KafkaMessageBus.ConsumerHandlerTest do
 
     fun = fn ->
       {:error, err_list} = ConsumerHandler.perform(OkConsumer, message)
-      assert err_list == [{:invalid_datetime, :field2, "invalid_data"}]
+      assert err_list == [{:field2, {"is invalid", [type: :utc_datetime, validation: :cast]}}]
     end
 
     assert capture_log(fun) =~

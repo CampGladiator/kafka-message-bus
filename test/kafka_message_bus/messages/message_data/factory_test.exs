@@ -19,7 +19,7 @@ defmodule KafkaMessageBus.Messages.MessageData.FactoryTest do
     test "exclusions list returns message to bypass message enforcement on factory match" do
       fun = fn ->
         {:ok, sample_data} =
-          Factory.create(%{}, "sample_resource", "sample_action", [SampleMessageData])
+          Factory.create(%{}, "sample_resource", "sample_action", [SampleMessageData2])
 
         assert sample_data == :message_contract_excluded
       end

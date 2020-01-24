@@ -6,6 +6,7 @@ defmodule KafkaMessageBus.MessageDataValidatorTest do
   test "validates and returns ok with suggested changes" do
     message_data = %{
       "id" => "ID_1",
+      "alt_id" => nil,
       "field1" => "the text",
       "field2" => "2019-12-19 19:22:26.779098Z",
       "field3" => "42"
@@ -44,11 +45,11 @@ defmodule KafkaMessageBus.MessageDataValidatorTest do
       {:error, err_list} = MessageDataValidator.validate(message)
 
       assert Enum.count(err_list) == 1
-      assert Enum.at(err_list, 0) == {:invalid_datetime, :field2, "INVALID DATA"}
+      assert Enum.at(err_list, 0) == {:field2, {"is invalid", [type: :utc_datetime, validation: :cast]}}
     end
 
     assert capture_log(fun) =~
-             "[debug] Error encountered while parsing from_iso8601: :invalid_format"
+             "[info]  Creating for sample_resource and sample_action"
   end
 
   test "validate/1 return error is map is missing any expected fields" do

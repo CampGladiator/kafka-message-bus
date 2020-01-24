@@ -25,41 +25,29 @@ defmodule KafkaMessageBus.Messages.MessageData.ValidatorTest do
       assert validated_data == %{}
     end
 
-    test "returns ok if all validations pass without change suggestions", %{
-      message_data: message_data
-    } do
-      {:ok, validated_message_data} =
-        [
-          fn data -> Validator.is_integer(data, :int_val2, :required) end
-        ]
-        |> Validator.do_validate(message_data)
+#    test "returns ok if all validations pass without change suggestions", %{
+#      message_data: message_data
+#    } do
+#      {:ok, validated_message_data} =
+#        [
+#          fn data -> Validator.is_integer(data, :int_val2, :required) end
+#        ]
+#        |> Validator.do_validate(message_data)
+#
+#      assert validated_message_data == %{}
+#    end
 
-      assert validated_message_data == %{}
-    end
-
-    test "returns ok with change suggestion map is suggestion encountered", %{
-      message_data: message_data
-    } do
-      {:ok, validated_message_data} =
-        [
-          fn data -> Validator.is_integer(data, :int_val, :required) end
-        ]
-        |> Validator.do_validate(message_data)
-
-      assert validated_message_data == %{int_val: 1234}
-    end
-
-    test "returns ok with multiple change suggestions", %{message_data: message_data} do
-      {:ok, validated_message_data} =
-        [
-          fn data -> Validator.is_integer(data, :int_val, :required) end,
-          fn data -> Validator.is_integer(data, :int_val2, :required) end,
-          fn data -> Validator.is_integer(data, :int_val3, :required) end
-        ]
-        |> Validator.do_validate(message_data)
-
-      assert validated_message_data == %{int_val: 1234, int_val3: 3456}
-    end
+#    test "returns ok with multiple change suggestions", %{message_data: message_data} do
+#      {:ok, validated_message_data} =
+#        [
+#          fn data -> Validator.is_integer(data, :int_val, :required) end,
+#          fn data -> Validator.is_integer(data, :int_val2, :required) end,
+#          fn data -> Validator.is_integer(data, :int_val3, :required) end
+#        ]
+#        |> Validator.do_validate(message_data)
+#
+#      assert validated_message_data == %{int_val: 1234, int_val3: 3456}
+#    end
 
     test "unexpected errors pass through", %{message_data: message_data} do
       fun = fn ->
@@ -76,15 +64,15 @@ defmodule KafkaMessageBus.Messages.MessageData.ValidatorTest do
                "[info]  Failure encountered while validating: {:error, :something_unexpected_happened}"
     end
 
-    test "returns error tuple if any validations fail" do
-      {:error, validated_message_data} =
-        Validator.validate(
-          [fn data -> Validator.is_integer(data, :missing_val, :required) end],
-          %{id: nil}
-        )
-
-      assert validated_message_data == [{:field_required, :missing_val, nil}]
-    end
+#    test "returns error tuple if any validations fail" do
+#      {:error, validated_message_data} =
+#        Validator.validate(
+#          [fn data -> Validator.is_integer(data, :missing_val, :required) end],
+#          %{id: nil}
+#        )
+#
+#      assert validated_message_data == [{:field_required, :missing_val, nil}]
+#    end
   end
 
   defp validator(message_data) do
@@ -205,34 +193,6 @@ defmodule KafkaMessageBus.Messages.MessageData.ValidatorTest do
       err = {:error, "error data"}
 
       assert Validator.apply_change_suggestions(err, message_data) == err
-    end
-  end
-
-  describe "is_boolean" do
-    test "ok on success" do
-      message_data = %{is_a_bool: true}
-      assert Validator.is_boolean(message_data, :is_a_bool, :required) == {:ok, %{}}
-    end
-  end
-
-  describe "is_string" do
-    test "ok on success" do
-      message_data = %{is_a_binary: "strings are binary"}
-      assert Validator.is_string(message_data, :is_a_binary, :required) == {:ok, %{}}
-    end
-  end
-
-  describe "is_integer" do
-    test "ok on success" do
-      message_data = %{the_field: 42}
-      assert Validator.is_integer(message_data, :the_field, :required) == {:ok, %{}}
-    end
-  end
-
-  describe "is_float" do
-    test "ok on success" do
-      message_data = %{the_field: 42.0}
-      assert Validator.is_float(message_data, :the_field, :required) == {:ok, %{}}
     end
   end
 

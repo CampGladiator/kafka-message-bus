@@ -1,4 +1,4 @@
-defmodule KafkaMessageBus.Examples.SampleMessageData do
+defmodule KafkaMessageBus.Examples.SampleMessageData2 do
   @moduledoc """
   This is an example of how validator structs should be written.
 
@@ -23,37 +23,29 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
   field validators piped into MessageData's validate/2 function.
   The validation rules for each message data type are these validation
   function lists.
+
+  https://stackoverflow.com/questions/40720942/is-it-possible-to-use-elixir-changesets-validations-without-using-models
   """
-  require Logger
-  import KafkaMessageBus.Messages.MessageData.Validator
-  alias KafkaMessageBus.Messages.MessageData
-  alias KafkaMessageBus.Messages.MessageData.MapUtil
+  use KafkaMessageBus.Messages.MessageData.MessageDataType
   alias __MODULE__
 
-  defstruct id: nil,
-            field1: nil,
-            field2: nil,
-            field3: nil
-
-  def new(%{} = message_data) do
-    {:ok,
-     %SampleMessageData{
-       id: MapUtil.safe_get(message_data, :id),
-       field1: MapUtil.safe_get(message_data, :field1),
-       field2: MapUtil.safe_get(message_data, :field2),
-       field3: MapUtil.safe_get(message_data, :field3)
-     }}
+  @primary_key {:id, :string, []}
+  schema "" do
+    field :alt_id, :integer, virtual: true
+    field :field1, :string, virtual: true
+    field :field2, :utc_datetime, virtual: true
+    field :field3, :float, virtual: true
   end
 
-  defimpl MessageData do
-    def validate(message_data) do
-      [
-#        &id_required/1,
-#        fn data -> is_string(data, :field1, :required) end,
-#        fn data -> is_valid_date_time_utc(data, :field2, :required) end,
-#        fn data -> is_integer(data, :field3, :required) end
-      ]
-      |> validate(message_data)
-    end
+  @required_params [:field1, :field2]
+  @optional_params [:id, :alt_id, :field3]
+
+  def changeset(%__MODULE__{} = message_data, attrs \\ %{}) do
+    message_data
+    |> cast(attrs, @required_params ++ @optional_params)
+    |> validate_required(@required_params)
+    |> validate_required_inclusion([:id , :alt_id])
   end
+
+  def new(%{} = message_data), do: map_struct(%__MODULE__{}, message_data)
 end

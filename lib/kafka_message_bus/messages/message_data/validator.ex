@@ -4,18 +4,10 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator do
   protocol implementors.
   """
   import KafkaMessageBus.Messages.MessageData.Validator.Response
+  import Ecto.Changeset
 
   require Logger
   alias KafkaMessageBus.Messages.MessageData.MapUtil
-
-  alias KafkaMessageBus.Messages.MessageData.Validator.{
-    BooleanValidator,
-    DateTimeValidator,
-    FloatValidator,
-    IntegerValidator,
-    RequiredValidator,
-    StringValidator
-  }
 
   @topics ~w(camp campaign log notification organization sign_contracts user)
   @resources ~w(area card division enrollment location note organization
@@ -60,13 +52,13 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator do
   a tuple with the validation failure information.
   Example: {:error, {:error_message, :field_name, field_value}}
   "
-  def validate(validation_functions, message_data) when is_list(validation_functions) do
+  def validate(validation_functions, message_data) do
     validation_functions
     |> do_validate(message_data)
     |> apply_change_suggestions(message_data)
   end
 
-  def do_validate(validation_functions, message_data) when is_list(validation_functions) do
+  def do_validate(validation_functions, message_data) do
     if Enum.any?(validation_functions) do
       validation_functions
       |> execute_validations(message_data)
@@ -96,6 +88,12 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator do
       err ->
         err
     end
+  end
+
+  def validate_required_inclusion(changeset, fields,  options \\ []) do
+    if Enum.any?(fields, fn(field) -> get_field(changeset, field) end),
+       do: changeset,
+       else: add_error(changeset, hd(fields), "One of these fields must be present: #{inspect fields}")
   end
 
   defp do_nested_validation(validation_functions, message_data, parent_name)
@@ -222,58 +220,14 @@ defmodule KafkaMessageBus.Messages.MessageData.Validator do
   defp prepare_validation_results({:ok, _} = result), do: result
   defp prepare_validation_results({:error, _} = result), do: result
 
-  def required(message_data, field_name_or_fields),
-    do: RequiredValidator.required(message_data, field_name_or_fields)
-
-  def required(message_data, field_name, ok_function),
-    do: RequiredValidator.required(message_data, field_name, ok_function)
-
-  def id_required(message_data, use_string_for_nation_id? \\ false) do
-    [
-      fn data -> required(data, [:id, :nation_id]) end,
-      fn data -> data |> is_string(:id, :not_required) |> remove_change_suggestions end,
-      nation_id_validator_func(use_string_for_nation_id?)
-    ]
-    |> do_validate(message_data)
-  end
-
-  defp nation_id_validator_func(true = _use_string_for_nation_id?),
-    do: fn data ->
-      data
-      |> is_string(:nation_id, :not_required)
-      |> remove_change_suggestions
-    end
-
-  defp nation_id_validator_func(false = _use_string_for_nation_id?),
-    do: fn data ->
-      data
-      |> IntegerValidator.is_integer(:nation_id, :not_required)
-      |> remove_change_suggestions
-    end
+#  def required(message_data, field_name_or_fields),
+#    do: RequiredValidator.required(message_data, field_name_or_fields)
+#
+#  def required(message_data, field_name, ok_function),
+#    do: RequiredValidator.required(message_data, field_name, ok_function)
 
   defp remove_change_suggestions({:error, _} = err), do: err
   defp remove_change_suggestions({:ok, _}), do: ok()
-
-  def is_integer(message_data, field_name, required?),
-    do: IntegerValidator.is_integer(message_data, field_name, required?)
-
-  def is_boolean(message_data, field_name, required?),
-    do: BooleanValidator.is_boolean(message_data, field_name, required?)
-
-  def is_string(message_data, field_name, required?, valid_values \\ []),
-    do: StringValidator.is_string(message_data, field_name, required?, valid_values)
-
-  def is_float(message_data, field_name, required?),
-    do: FloatValidator.is_float(message_data, field_name, required?)
-
-  def is_valid_date_time_utc(message_data, field_name, required?),
-    do: DateTimeValidator.is_valid_date_time_utc(message_data, field_name, required?)
-
-  def is_valid_date_utc(message_data, field_name, required?),
-    do: DateTimeValidator.is_valid_date_utc(message_data, field_name, required?)
-
-  def is_valid_time_utc(message_data, field_name, required?),
-    do: DateTimeValidator.is_valid_time_utc(message_data, field_name, required?)
 
   def enrollment_status, do: @enrollment_status
   def enrollment_types, do: @enrollment_types
