@@ -1,6 +1,8 @@
 defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
   @moduledoc """
-
+  This is the base module for all message data type definition. A
+  message data type is the type that represents the contents of the
+  'data' field on the kafka message.
   """
 
   defmacro __using__(_opts) do
@@ -11,6 +13,10 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
       use Ecto.Schema
       import Ecto.Changeset
 
+      @doc """
+      This function is used to facilitate the definition of message data
+      type's new/1 (factory) functions.
+      """
       def map_struct(struct, %{} = message_data) do
         mapped = Enum.reduce Map.to_list(struct), struct, fn {key, _}, acc ->
           case MapUtil.safe_get(message_data, key) do
