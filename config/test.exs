@@ -1,7 +1,9 @@
 use Mix.Config
 
 config :logger,
-  level: :error
+  level: :debug
+
+config :logger, :console, metadata: :all
 
 config :kafka_message_bus,
   source: "kafka-message-bus",
@@ -10,3 +12,8 @@ config :kafka_message_bus,
 
 config :kafka_message_bus, KafkaMessageBus.Adapters.TestAdapter,
   producers: ["default_topic", "secondary_topic"]
+
+config :kafka_message_bus, :message_contracts,
+  exclusions: :none,
+  message_data_factory_implementation:
+    KafkaMessageBus.Examples.SampleMessageDataFactoryImplementation

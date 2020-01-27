@@ -1,4 +1,9 @@
 defmodule KafkaMessageBus.Utils do
+  @moduledoc """
+  A set of utility functions.
+  """
+  require Logger
+
   def to_module_short_name(adapter) do
     adapter
     |> Module.split()

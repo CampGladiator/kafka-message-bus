@@ -1,4 +1,8 @@
 defmodule KafkaMessageBus do
+  @moduledoc """
+  Set of functions that can be used by the app that depends on the kafka message bus. This serves
+  as an entry point to the app for producers.
+  """
   alias KafkaMessageBus.Producer
 
   def produce(data, key, resource, action, opts \\ []) do
