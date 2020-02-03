@@ -28,7 +28,6 @@ defmodule KafkaMessageBus.Adapters.Exq.ConsumerTest do
 
       assert_raise(RuntimeError, fun)
     end
-
   end
 end
 
@@ -39,7 +38,7 @@ defmodule ConsumerImplementation do
 end
 
 defmodule MockConsumerHandler do
-  def perform(_module, %{"field1" => 42} = message) do
+  def perform(_module, %{"field1" => 42} = _message) do
     raise "Something went afoul!"
   end
 

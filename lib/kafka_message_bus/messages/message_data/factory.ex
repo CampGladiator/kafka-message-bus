@@ -6,6 +6,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
   new/1 functions do not alter or validate the data field values.
   """
 
+  alias KafkaMessageBus.Config
   require Logger
 
   @doc """
@@ -54,8 +55,8 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
     case on_create(data, resource, action, factory_implementation) do
       {:ok, data} ->
         if data.__struct__ in exclusions,
-           do: {:ok, :message_contract_excluded},
-           else: {:ok, data}
+          do: {:ok, :message_contract_excluded},
+          else: {:ok, data}
 
       {:error, :unrecognized_message_data_type} ->
         {:error, :unrecognized_message_data_type}
@@ -78,7 +79,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
   end
 
   def get_message_contract_exclusions do
-    case Application.get_env(:kafka_message_bus, :message_contracts)[:exclusions] do
+    case Config.message_contracts!()[:exclusions] do
       nil -> :all
       found -> found
     end
@@ -86,7 +87,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
 
   def get_factory_implementation,
     do:
-      Application.get_env(:kafka_message_bus, :message_contracts)[
+      Config.message_contracts!()[
         :message_data_factory_implementation
       ]
 end

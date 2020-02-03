@@ -7,12 +7,11 @@ defmodule KafkaMessageBus.Application do
 
   use Application
 
-  #TODO: raise informative error if config is not properly set
   def start(_type, _args) do
-    Config.get_adapters()
+    Config.get_adapters!()
     |> Enum.flat_map(fn adapter ->
       adapter
-      |> Config.get_adapter_config()
+      |> Config.get_adapter_config!()
       |> adapter.init()
       |> case do
         {:ok, child} -> [child]
@@ -21,8 +20,4 @@ defmodule KafkaMessageBus.Application do
     end)
     |> Supervisor.start_link(strategy: :one_for_one)
   end
-
-#  defp on_start() do
-#
-#  end
 end

@@ -31,7 +31,7 @@ defmodule KafkaMessageBus.ConsumerHandler do
         consume(module, m)
 
       {:error, [] = validation_errors} ->
-        Logger.error(fn ->
+        Logger.warn(fn ->
           "Validation failed for message_data consumption: #{inspect(validation_errors)}\n#{
             inspect(message)
           }"
@@ -40,7 +40,7 @@ defmodule KafkaMessageBus.ConsumerHandler do
         {:error, validation_errors}
 
       {:error, :unrecognized_message_data_type} ->
-        Logger.warn(fn ->
+        Logger.error(fn ->
           "Attempting to consume unrecognized message data type: #{inspect(message)}"
         end)
 

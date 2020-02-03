@@ -6,14 +6,23 @@ defmodule KafkaMessageBus.Messages.MessageData.FactoryTest do
   alias KafkaMessageBus.Messages.MessageData.Factory
 
   describe "message_contract_exclusions" do
-    test "default test context has no exclusions" do
+    test "default test context has example exclusion" do
       result = Factory.get_message_contract_exclusions()
-      assert result == :none
+      assert result == [KafkaMessageBus.Examples.SampleExclusion]
     end
 
     test ":all exclusions returns message to bypass message enforcement" do
       {:ok, sample_data} = Factory.create(%{}, "sample_resource", "sample_action", :all)
       assert sample_data == :message_contract_excluded
+    end
+
+    test ":none exclusions returns struct" do
+      fun = fn ->
+        {:ok, sample_data} = Factory.create(%{}, "sample_resource", "sample_action", :none)
+        assert sample_data.__struct__ == SampleMessageData
+      end
+
+      assert capture_log(fun) =~ "[info]  Creating for sample_resource and sample_action: %{}"
     end
 
     test "exclusions list returns message to bypass message enforcement on factory match" do

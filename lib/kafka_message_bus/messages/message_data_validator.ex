@@ -31,8 +31,8 @@ defmodule KafkaMessageBus.MessageDataValidator do
   def validate(%{} = message), do: {:error, "Could not process message: #{inspect(message)}"}
 
   def validate(message_data, resource, action) do
-      message_data
-      |> Factory.create(resource, action)
-      |> validate
-    end
+    message_data
+    |> Factory.create(resource, action)
+    |> validate
+  end
 end

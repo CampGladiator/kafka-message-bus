@@ -21,7 +21,8 @@ defmodule KafkaMessageBus.MapUtilTest do
     end
 
     test "returns error when field_name string is unrecognized as an existing atom" do
-      expected_err_msg = "Failed to convert field_name 'unk_key' to an existing atom. ERR: %ArgumentError{message: \"argument error\"}"
+      expected_err_msg =
+        "Failed to convert field_name 'unk_key' to an existing atom. ERR: %ArgumentError{message: \"argument error\"}"
 
       fun = fn ->
         {:error, err_msg} = MapUtil.safe_get(%{test_id: 1234}, "unk_key")

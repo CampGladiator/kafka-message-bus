@@ -8,7 +8,7 @@ defmodule KafkaMessageBus.Producer do
   require Logger
 
   def produce(data, key, resource, action, opts \\ []) do
-    topic = Keyword.get(opts, :topic, Config.default_topic())
+    topic = Keyword.get(opts, :topic, Config.default_topic!())
 
     produce_info = get_produce_info(data, key, resource, action, opts, topic)
 
@@ -52,7 +52,7 @@ defmodule KafkaMessageBus.Producer do
   end
 
   defp produce(data, key, resource, action, opts, topic) do
-    source = Keyword.get(opts, :source, Config.source())
+    source = Keyword.get(opts, :source, Config.source!())
 
     Logger.info(fn ->
       key_log = if key != nil, do: "(key: #{key}) ", else: ""

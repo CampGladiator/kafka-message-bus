@@ -3,7 +3,7 @@ defmodule KafkaMessageBus.Producer.AdapterHandler do
   A set of functions that handles adapters for KafkaMessageBus.Producer. This code was
   originally extracted from Producer.
   """
-  alias KafkaMessageBus.Utils
+  alias KafkaMessageBus.{Config, Utils}
   require Logger
 
   def process_adapters(message, opts, topic),
@@ -40,17 +40,18 @@ defmodule KafkaMessageBus.Producer.AdapterHandler do
 
   defp handle_adapter_result({adapter, error, message}) do
     Logger.error(fn ->
-      "Failed to send message using #{Utils.to_module_short_name(adapter)}: #{inspect(error)} for message_data: #{inspect(message)}"
+      "Failed to send message using #{Utils.to_module_short_name(adapter)}: #{inspect(error)} for message_data: #{
+        inspect(message)
+      }"
     end)
 
     {:error, error}
   end
 
   def get_adapters_for_topic(topic) do
-    :kafka_message_bus
-    |> Application.get_env(:adapters)
+    Config.get_adapters!()
     |> Enum.flat_map(fn adapter ->
-      config = Application.get_env(:kafka_message_bus, adapter)
+      config = Config.get_adapter_config!(adapter)
       if topic in config[:producers], do: [adapter], else: []
     end)
   end

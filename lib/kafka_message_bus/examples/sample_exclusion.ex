@@ -6,7 +6,7 @@ defmodule KafkaMessageBus.Examples.SampleExclusion do
 
   @primary_key {:id, :string, []}
   embedded_schema do
-    field :field1, :string
+    field(:field1, :string)
   end
 
   @required_params [:id, :field1]

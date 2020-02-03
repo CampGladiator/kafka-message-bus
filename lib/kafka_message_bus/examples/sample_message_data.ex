@@ -27,10 +27,10 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
 
   @primary_key {:id, :string, []}
   embedded_schema do
-    field :alt_id, :integer
-    field :field1, :string
-    field :field2, :utc_datetime
-    field :field3, :float
+    field(:alt_id, :integer)
+    field(:field1, :string)
+    field(:field2, :utc_datetime)
+    field(:field3, :float)
   end
 
   @required_params [:field1, :field2]
@@ -40,7 +40,7 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
     message_data
     |> cast(attrs, @required_params ++ @optional_params)
     |> validate_required(@required_params)
-    |> validate_required_inclusion([:id , :alt_id])
+    |> validate_required_inclusion([:id, :alt_id])
   end
 
   def new(%{} = message_data), do: map_struct(%__MODULE__{}, message_data)

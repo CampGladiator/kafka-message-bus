@@ -15,6 +15,12 @@ defmodule KafkaMessageBus.Messages.MessageData.ValidatorTest do
     {:ok, field3_val, _} = DateTime.from_iso8601("2019-10-11 10:09:08Z")
 
     assert changeset.valid?
-    assert changeset.changes == %{alt_id: 12_345, field1: "abc", field2: field3_val, field3: 234.0}
+
+    assert changeset.changes == %{
+             alt_id: 12_345,
+             field1: "abc",
+             field2: field3_val,
+             field3: 234.0
+           }
   end
 end

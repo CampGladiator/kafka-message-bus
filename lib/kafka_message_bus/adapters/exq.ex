@@ -31,7 +31,7 @@ defmodule KafkaMessageBus.Adapters.Exq do
 
   @impl Adapter
   def produce(message, opts) do
-    topic = Keyword.get(opts, :topic, Config.default_topic())
+    topic = Keyword.get(opts, :topic, Config.default_topic!())
     resource = message.resource
 
     message = Poison.encode!(message)

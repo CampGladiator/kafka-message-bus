@@ -47,11 +47,12 @@ defmodule KafkaMessageBus.MessageDataValidatorTest do
       {:error, err_list} = MessageDataValidator.validate(message)
 
       assert Enum.count(err_list) == 1
-      assert Enum.at(err_list, 0) == {:field2, {"is invalid", [type: :utc_datetime, validation: :cast]}}
+
+      assert Enum.at(err_list, 0) ==
+               {:field2, {"is invalid", [type: :utc_datetime, validation: :cast]}}
     end
 
-    assert capture_log(fun) =~
-             "[info]  Creating for sample_resource and sample_action"
+    assert capture_log(fun) =~ "[info]  Creating for sample_resource and sample_action"
   end
 
   test "validate/1 return error is map is missing any expected fields" do

@@ -9,9 +9,15 @@ defmodule KafkaMessageBus.ProducerTest do
 
   describe "producing messages" do
     test "it produces messages to the configured adapter" do
-      message = %{"data" => "here"}
+      message = %{
+        "id" => nil,
+        "alt_id" => 12_345,
+        "field1" => "abc",
+        "field2" => "2019-10-11T10:09:08Z",
+        "field3" => 234.0
+      }
 
-      Producer.produce(message, "key", "resource", "action")
+      assert :ok == Producer.produce(message, "key", "sample_resource", "sample_action")
 
       [produced_message] = TestAdapter.get_produced_messages()
 
@@ -29,12 +35,14 @@ defmodule KafkaMessageBus.ProducerTest do
       message = %{"data" => "here"}
 
       result = Producer.produce(message, "key", "sample_resource", "sample_action")
-      assert result == {:error,
-               [
-                 id: {"One of these fields must be present: [:id, :alt_id]", []},
-                 field1: {"can't be blank", [validation: :required]},
-                 field2: {"can't be blank", [validation: :required]}
-               ]}
+
+      assert result ==
+               {:error,
+                [
+                  id: {"One of these fields must be present: [:id, :alt_id]", []},
+                  field1: {"can't be blank", [validation: :required]},
+                  field2: {"can't be blank", [validation: :required]}
+                ]}
     end
 
     test "should warn if Elixir code is trying to create a nation message" do
@@ -44,7 +52,8 @@ defmodule KafkaMessageBus.ProducerTest do
         assert :ok == Producer.produce(message, "key", "resource", "nation_action")
       end
 
-      assert capture_log(fun) =~ "[warn]  Realm module is attempting to produce a message that appears to originate from nation"
+      assert capture_log(fun) =~
+               "[warn]  Realm module is attempting to produce a message that appears to originate from nation"
     end
 
     test "should exclude message data types included in exclusions list in config" do
@@ -54,7 +63,8 @@ defmodule KafkaMessageBus.ProducerTest do
         assert :ok == Producer.produce(message, "key", "sample_resource", "sample_exclusion")
       end
 
-      assert capture_log(fun) =~ "[info]  Message contract (produce) excluded: resource=sample_resource, action=sample_exclusion"
+      assert capture_log(fun) =~
+               "[info]  Message contract (produce) excluded: resource=sample_resource, action=sample_exclusion"
     end
 
     test "unhandled exceptions should be wrapped in an error tuple" do
