@@ -30,6 +30,8 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
         {:ok, mapped}
       end
 
+      def new(nil), do: new(%{})
+
       defimpl MessageData do
         def validate(message_data) do
           struct_type = message_data.__struct__
@@ -37,7 +39,7 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
           changeset = struct_type.changeset(struct, Map.from_struct(message_data))
 
           if changeset.valid?,
-             do: {:ok, changeset.changes},
+             do: {:ok, apply_changes(changeset)},
              else: {:error, changeset.errors}
         end
       end

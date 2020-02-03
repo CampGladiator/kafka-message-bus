@@ -4,6 +4,7 @@ defmodule KafkaMessageBus.Config do
   """
   @lib_name :kafka_message_bus
 
+  #TODO: return informative error if environment variables not found
   def get_adapters do
     Application.get_env(@lib_name, :adapters)
   end
@@ -19,4 +20,6 @@ defmodule KafkaMessageBus.Config do
   def source do
     Application.get_env(@lib_name, :source)
   end
+
+  #TODO: Consolidate config calls to this module (message contract settings, for instance)
 end

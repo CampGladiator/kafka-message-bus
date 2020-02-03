@@ -1,6 +1,7 @@
 defmodule KafkaMessageBus.MessageDataValidatorTest do
   use ExUnit.Case
   import ExUnit.CaptureLog
+  alias KafkaMessageBus.Examples.SampleMessageData
   alias KafkaMessageBus.MessageDataValidator
 
   test "validates and returns ok with suggested changes" do
@@ -19,6 +20,7 @@ defmodule KafkaMessageBus.MessageDataValidatorTest do
     fun = fn ->
       {:ok, validated_message} = MessageDataValidator.validate(message)
 
+      assert validated_message.__struct__ == SampleMessageData
       assert validated_message.id == "ID_1"
       assert validated_message.field1 == "the text"
       {:ok, datetime1, _} = DateTime.from_iso8601("2019-12-19 19:22:26.779098Z")

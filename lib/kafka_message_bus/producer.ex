@@ -15,7 +15,7 @@ defmodule KafkaMessageBus.Producer do
     if Enum.any?(get_adapters_for_topic(topic)) do
       case MessageDataValidator.validate(data, resource, action) do
         {:ok, :message_contract_excluded} ->
-          Logger.debug(fn ->
+          Logger.info(fn ->
             "Message contract (produce) excluded: resource=#{resource}, action=#{action}"
           end)
 
@@ -24,7 +24,7 @@ defmodule KafkaMessageBus.Producer do
         {:ok, message_data} ->
           produce(message_data, key, resource, action, opts, topic)
 
-        {:error, [] = validation_errors} ->
+        {:error, validation_errors} when is_list(validation_errors) ->
           Logger.error(fn ->
             "Validation failed for message_data production: #{inspect(validation_errors)}\n#{
               produce_info
@@ -41,15 +41,6 @@ defmodule KafkaMessageBus.Producer do
           # DEPRECATED: we currently try to consume messages that are not recognized
           #   by the validator but want an error to be returned in the future
           produce(data, key, resource, action, opts, topic)
-
-        err ->
-          Logger.error(fn ->
-            "Unexpected response encountered when validating producer message data: #{
-              inspect(err)
-            }"
-          end)
-
-          err
       end
     else
       topic_adapters_not_found(topic)

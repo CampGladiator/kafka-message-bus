@@ -4,7 +4,7 @@ defmodule KafkaMessageBus.Producer.AdapterHandlerTest do
   alias KafkaMessageBus.Producer.AdapterHandler
 
   describe "process_adapters" do
-    test "should work" do
+    test "works when adapter found" do
       fun = fn ->
         adapters = [KafkaMessageBus.Adapters.TestAdapter, KafkaMessageBus.Adapters.TestAdapter]
         message = %{}
@@ -21,6 +21,26 @@ defmodule KafkaMessageBus.Producer.AdapterHandlerTest do
       assert capture_log(fun) =~ "[debug] Producing message with TestAdapter adapter"
 
       assert capture_log(fun) =~ "[debug] Message successfully produced by TestAdapter"
+    end
+
+    test "should log error if error response encountered" do
+      fun = fn ->
+        adapters = [KafkaMessageBus.Adapters.TestAdapter, KafkaMessageBus.Adapters.TestAdapter]
+        message = %{bad_message: nil}
+
+        result = AdapterHandler.process_adapters(
+          adapters,
+          message,
+          [topic: "default_topic"],
+          "default_topic"
+        )
+
+        assert :ok == result
+      end
+
+      assert capture_log(fun) =~ "[debug] Producing message with TestAdapter adapter"
+
+      assert capture_log(fun) =~ "[error] Failed to send message using TestAdapter: {:error, :something_bad_happened}"
     end
 
     test "should return error if provided empty list of adapters" do

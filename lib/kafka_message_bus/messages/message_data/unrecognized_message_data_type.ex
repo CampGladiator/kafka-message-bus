@@ -5,6 +5,8 @@ defmodule KafkaMessageBus.Messages.MessageData.UnrecognizedMessageDataType do
   def on_create do
     quote do
       def on_create(data, resource, action) when is_binary(resource) and is_binary(action) do
+        require Logger
+
         fn ->
           "Encountered unrecognized message type for resource: #{resource}, action: #{action}. #{
             inspect(data)

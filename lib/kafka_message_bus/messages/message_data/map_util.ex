@@ -39,9 +39,9 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
     Map.get(map, String.to_existing_atom(field_name))
   rescue
     e ->
-      Logger.warn(fn ->
-        "Failed to convert field_name '#{field_name}' to an existing atom. ERR: #{inspect(e)}"
-      end)
+      err_msg = "Failed to convert field_name '#{field_name}' to an existing atom. ERR: #{inspect(e)}"
+      Logger.warn(fn -> err_msg end)
+      {:error, err_msg}
   end
 
   defp string_to_atom(value, _map, _field_name), do: value

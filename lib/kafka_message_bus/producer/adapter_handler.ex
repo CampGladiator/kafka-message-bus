@@ -1,6 +1,7 @@
 defmodule KafkaMessageBus.Producer.AdapterHandler do
   @moduledoc """
-  A set of functions that handles adapters for KafkaMessageBus.Producer.
+  A set of functions that handles adapters for KafkaMessageBus.Producer. This code was
+  originally extracted from Producer.
   """
   alias KafkaMessageBus.Utils
   require Logger
@@ -22,14 +23,14 @@ defmodule KafkaMessageBus.Producer.AdapterHandler do
         "Producing message with #{Utils.to_module_short_name(adapter)} adapter"
       end)
 
-      {adapter, adapter.produce(message, opts)}
+      {adapter, adapter.produce(message, opts), message}
     end)
     |> Enum.each(&handle_adapter_result/1)
 
     :ok
   end
 
-  defp handle_adapter_result({adapter, :ok}) do
+  defp handle_adapter_result({adapter, :ok, _message}) do
     Logger.debug(fn ->
       "Message successfully produced by #{Utils.to_module_short_name(adapter)} adapter"
     end)
@@ -37,9 +38,9 @@ defmodule KafkaMessageBus.Producer.AdapterHandler do
     :ok
   end
 
-  defp handle_adapter_result({adapter, error}) do
+  defp handle_adapter_result({adapter, error, message}) do
     Logger.error(fn ->
-      "Failed to send message using #{Utils.to_module_short_name(adapter)}: #{inspect(error)}"
+      "Failed to send message using #{Utils.to_module_short_name(adapter)}: #{inspect(error)} for message_data: #{inspect(message)}"
     end)
 
     {:error, error}

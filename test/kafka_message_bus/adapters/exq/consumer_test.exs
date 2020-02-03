@@ -17,6 +17,18 @@ defmodule KafkaMessageBus.Adapters.Exq.ConsumerTest do
       assert capture_log(fun) =~
                "MockConsumerHandler: %{\"field1\" => \"value1\", \"field2\" => \"value2\"}"
     end
+
+    test "rethrown exceptions" do
+      json_data = ~s({"field1": 42, "field2": "value2"})
+      module = "Module"
+
+      fun = fn ->
+        Consumer.perform(module, json_data, MockConsumerHandler)
+      end
+
+      assert_raise(RuntimeError, fun)
+    end
+
   end
 end
 
@@ -27,6 +39,10 @@ defmodule ConsumerImplementation do
 end
 
 defmodule MockConsumerHandler do
+  def perform(_module, %{"field1" => 42} = message) do
+    raise "Something went afoul!"
+  end
+
   def perform(_module, message) do
     require Logger
     Logger.info(fn -> "MockConsumerHandler: " <> inspect(message) end)
