@@ -42,8 +42,21 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
 
           if changeset.valid?,
             do: {:ok, apply_changes(changeset)},
-            else: {:error, changeset.errors}
+            else: {:error, combine_errors(changeset)}
         end
+
+        defp combine_errors(changeset) do
+          changeset.changes
+          |> Map.to_list()
+          |> Enum.reduce(changeset.errors, fn error_tuple, acc ->
+            acc ++ nested_errors(error_tuple)
+          end)
+        end
+
+        defp nested_errors({field_name, %Ecto.Changeset{valid?: false, errors: errors}}),
+          do: [{field_name, errors}]
+
+        defp nested_errors({_field_name, _value}), do: []
       end
     end
   end

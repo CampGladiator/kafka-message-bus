@@ -23,10 +23,12 @@ defmodule KafkaMessageBus.Adapters.Exq.ConsumerTest do
       module = "Module"
 
       fun = fn ->
-        Consumer.perform(module, json_data, MockConsumerHandler)
+        assert_raise(RuntimeError, fn ->
+          Consumer.perform(module, json_data, MockConsumerHandler)
+        end)
       end
 
-      assert_raise(RuntimeError, fun)
+      assert capture_log(fun) =~ "[info]  Received Exq message"
     end
   end
 end

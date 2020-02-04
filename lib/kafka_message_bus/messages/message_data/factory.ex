@@ -86,8 +86,5 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
   end
 
   def get_factory_implementation,
-    do:
-      Config.message_contracts!()[
-        :message_data_factory_implementation
-      ]
+    do: Config.message_contracts!()[:message_data_factory_implementation]
 end

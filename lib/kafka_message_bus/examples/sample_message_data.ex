@@ -23,6 +23,7 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
   validate_required_inclusion/2, is used to ensure that one of n fields
   is provided with the message data.
   """
+  alias KafkaMessageBus.Examples.SampleExclusion
   use KafkaMessageBus.Messages.MessageData.MessageDataType
 
   @primary_key {:id, :string, []}
@@ -31,6 +32,7 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
     field(:field1, :string)
     field(:field2, :utc_datetime)
     field(:field3, :float)
+    embeds_one(:nested_optional, SampleExclusion)
   end
 
   @required_params [:field1, :field2]
@@ -39,6 +41,7 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
   def changeset(%__MODULE__{} = message_data, attrs \\ %{}) do
     message_data
     |> cast(attrs, @required_params ++ @optional_params)
+    |> cast_embed(:nested_optional, with: &SampleExclusion.changeset/2, required: false)
     |> validate_required(@required_params)
     |> validate_required_inclusion([:id, :alt_id])
   end

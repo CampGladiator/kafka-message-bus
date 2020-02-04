@@ -24,6 +24,26 @@ defmodule KafkaMessageBus.Messages.MessageData.SampleMessageDataTest do
            }
   end
 
+  test "with invalid embedded schema" do
+    data = %{
+      "id" => nil,
+      "alt_id" => 12_345,
+      "field1" => "abc",
+      "field2" => "invalid",
+      "field3" => "234",
+      "nested_optional" => %{}
+    }
+
+    changeset = SampleMessageData.changeset(%SampleMessageData{}, data)
+
+    refute changeset.valid?
+
+    assert changeset.changes.nested_optional.errors == [
+             id: {"can't be blank", [validation: :required]},
+             field1: {"can't be blank", [validation: :required]}
+           ]
+  end
+
   test "using the changeset without required parameters" do
     changeset = SampleMessageData.changeset(%SampleMessageData{})
 

@@ -14,7 +14,8 @@ defmodule KafkaMessageBus.ProducerTest do
         "alt_id" => 12_345,
         "field1" => "abc",
         "field2" => "2019-10-11T10:09:08Z",
-        "field3" => 234.0
+        "field3" => 234.0,
+        "nested_optional" => nil
       }
 
       assert :ok == Producer.produce(message, "key", "sample_resource", "sample_action")
