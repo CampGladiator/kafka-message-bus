@@ -21,14 +21,16 @@ defmodule KafkaMessageBus.Examples.SampleMessageDataFactoryImplementation do
   on_create function. This is the default behavior for unrecognized message data
   types that are encountered on the bus.
   """
-  alias KafkaMessageBus.Examples.SampleMessageData
+  alias KafkaMessageBus.Examples.{SampleExclusion, SampleMessageData}
   alias KafkaMessageBus.Messages.MessageData.UnrecognizedMessageDataType
-  require Logger
 
   def on_create(%{} = data, "sample_resource", "sample_action") do
+    require Logger
     Logger.info(fn -> "Creating for sample_resource and sample_action: #{inspect(data)}" end)
     SampleMessageData.new(data)
   end
+
+  def on_create(%{} = data, "sample_resource", "sample_exclusion"), do: SampleExclusion.new(data)
 
   use UnrecognizedMessageDataType, :on_create
 end

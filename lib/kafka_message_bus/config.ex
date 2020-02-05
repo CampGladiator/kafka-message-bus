@@ -4,19 +4,22 @@ defmodule KafkaMessageBus.Config do
   """
   @lib_name :kafka_message_bus
 
-  def get_adapters do
-    Application.get_env(@lib_name, :adapters)
+  def get_adapters!, do: get_required_config!(:adapters)
+
+  def get_adapter_config!(adapter), do: get_required_config!(adapter)
+
+  def default_topic!, do: get_required_config!(:default_topic)
+
+  def source!, do: get_required_config!(:source)
+
+  def message_contracts!, do: get_required_config!(:message_contracts)
+
+  def get_required_config!(setting) do
+    case Application.get_env(@lib_name, setting) do
+      nil -> raise "Failed to find config setting: #{inspect(setting)}"
+      value -> value
+    end
   end
 
-  def get_adapter_config(adapter) do
-    Application.get_env(@lib_name, adapter)
-  end
-
-  def default_topic do
-    Application.get_env(@lib_name, :default_topic)
-  end
-
-  def source do
-    Application.get_env(@lib_name, :source)
-  end
+  # FUTURE: Consolidate config calls to this module?
 end

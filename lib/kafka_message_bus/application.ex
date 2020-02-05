@@ -8,10 +8,10 @@ defmodule KafkaMessageBus.Application do
   use Application
 
   def start(_type, _args) do
-    Config.get_adapters()
+    Config.get_adapters!()
     |> Enum.flat_map(fn adapter ->
       adapter
-      |> Config.get_adapter_config()
+      |> Config.get_adapter_config!()
       |> adapter.init()
       |> case do
         {:ok, child} -> [child]

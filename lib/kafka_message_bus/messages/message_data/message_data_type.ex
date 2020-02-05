@@ -18,17 +18,21 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
       type's new/1 (factory) functions.
       """
       def map_struct(struct, %{} = message_data) do
-        mapped = Enum.reduce Map.to_list(struct), struct, fn {key, _}, acc ->
-          case MapUtil.safe_get(message_data, key) do
-            value when key in [:__meta__, :__struct__] ->
-              acc
-            value ->
-              %{acc | key => value}
-          end
-        end
+        mapped =
+          Enum.reduce(Map.to_list(struct), struct, fn {key, _}, acc ->
+            case MapUtil.safe_get(message_data, key) do
+              value when key in [:__meta__, :__struct__] ->
+                acc
+
+              value ->
+                %{acc | key => value}
+            end
+          end)
 
         {:ok, mapped}
       end
+
+      def new(nil), do: new(%{})
 
       defimpl MessageData do
         def validate(message_data) do
@@ -37,9 +41,22 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
           changeset = struct_type.changeset(struct, Map.from_struct(message_data))
 
           if changeset.valid?,
-             do: {:ok, changeset.changes},
-             else: {:error, changeset.errors}
+            do: {:ok, apply_changes(changeset)},
+            else: {:error, combine_errors(changeset)}
         end
+
+        defp combine_errors(changeset) do
+          changeset.changes
+          |> Map.to_list()
+          |> Enum.reduce(changeset.errors, fn error_tuple, acc ->
+            acc ++ nested_errors(error_tuple)
+          end)
+        end
+
+        defp nested_errors({field_name, %Ecto.Changeset{valid?: false, errors: errors}}),
+          do: [{field_name, errors}]
+
+        defp nested_errors({_field_name, _value}), do: []
       end
     end
   end

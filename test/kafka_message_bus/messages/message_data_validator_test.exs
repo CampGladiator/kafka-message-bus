@@ -1,9 +1,10 @@
 defmodule KafkaMessageBus.MessageDataValidatorTest do
   use ExUnit.Case
   import ExUnit.CaptureLog
+  alias KafkaMessageBus.Examples.SampleMessageData
   alias KafkaMessageBus.MessageDataValidator
 
-  test "validates and returns ok with suggested changes" do
+  test "validates and returns ok with applied changes" do
     message_data = %{
       "id" => "ID_1",
       "alt_id" => nil,
@@ -19,6 +20,7 @@ defmodule KafkaMessageBus.MessageDataValidatorTest do
     fun = fn ->
       {:ok, validated_message} = MessageDataValidator.validate(message)
 
+      assert validated_message.__struct__ == SampleMessageData
       assert validated_message.id == "ID_1"
       assert validated_message.field1 == "the text"
       {:ok, datetime1, _} = DateTime.from_iso8601("2019-12-19 19:22:26.779098Z")
@@ -45,11 +47,68 @@ defmodule KafkaMessageBus.MessageDataValidatorTest do
       {:error, err_list} = MessageDataValidator.validate(message)
 
       assert Enum.count(err_list) == 1
-      assert Enum.at(err_list, 0) == {:field2, {"is invalid", [type: :utc_datetime, validation: :cast]}}
+
+      assert Enum.at(err_list, 0) ==
+               {:field2, {"is invalid", [type: :utc_datetime, validation: :cast]}}
     end
 
-    assert capture_log(fun) =~
-             "[info]  Creating for sample_resource and sample_action"
+    assert capture_log(fun) =~ "[info]  Creating for sample_resource and sample_action"
+  end
+
+  test "should combine errors with validation errors on embedded/nested schemas" do
+    message_data = %{
+      "id" => "ID_1",
+      "field1" => nil,
+      "field2" => "INVALID DATA",
+      "field3" => 42,
+      "nested_optional" => %{}
+    }
+
+    resource = "sample_resource"
+    action = "sample_action"
+    message = %{"data" => message_data, "action" => action, "resource" => resource}
+
+    fun = fn ->
+      {:error, err_list} = MessageDataValidator.validate(message)
+
+      assert err_list == [
+               field1: {"can't be blank", [validation: :required]},
+               field2: {"is invalid", [type: :utc_datetime, validation: :cast]},
+               nested_optional: [
+                 id: {"can't be blank", [validation: :required]},
+                 field1: {"can't be blank", [validation: :required]}
+               ]
+             ]
+    end
+
+    assert capture_log(fun) =~ "[info]  Creating for sample_resource and sample_action"
+  end
+
+  test "should show embedded errors when parent schema has no errors" do
+    message_data = %{
+      "id" => "ID_1",
+      "field1" => "the text",
+      "field2" => "2019-12-19 19:22:26.779098Z",
+      "field3" => "42",
+      "nested_optional" => %{}
+    }
+
+    resource = "sample_resource"
+    action = "sample_action"
+    message = %{"data" => message_data, "action" => action, "resource" => resource}
+
+    fun = fn ->
+      {:error, err_list} = MessageDataValidator.validate(message)
+
+      assert err_list == [
+               nested_optional: [
+                 id: {"can't be blank", [validation: :required]},
+                 field1: {"can't be blank", [validation: :required]}
+               ]
+             ]
+    end
+
+    assert capture_log(fun) =~ "[info]  Creating for sample_resource and sample_action"
   end
 
   test "validate/1 return error is map is missing any expected fields" do

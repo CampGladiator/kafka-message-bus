@@ -6,6 +6,7 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
   new/1 functions do not alter or validate the data field values.
   """
 
+  alias KafkaMessageBus.Config
   require Logger
 
   @doc """
@@ -53,14 +54,12 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
        when is_list(exclusions) do
     case on_create(data, resource, action, factory_implementation) do
       {:ok, data} ->
-        if data.__struct__ in exclusions, do: {:ok, :message_contract_excluded}, else: data
+        if data.__struct__ in exclusions,
+          do: {:ok, :message_contract_excluded},
+          else: {:ok, data}
 
       {:error, :unrecognized_message_data_type} ->
         {:error, :unrecognized_message_data_type}
-
-      err ->
-        Logger.info(fn -> "Unexpected error encountered: #{inspect(err)}" end)
-        err
     end
   end
 
@@ -76,22 +75,16 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
           Logger.error(fn -> err_message <> ", error: #{inspect(err)}" end)
 
           reraise err, __STACKTRACE__
-
-        e ->
-          e
       end
   end
 
   def get_message_contract_exclusions do
-    case Application.get_env(:kafka_message_bus, :message_contracts)[:exclusions] do
+    case Config.message_contracts!()[:exclusions] do
       nil -> :all
       found -> found
     end
   end
 
   def get_factory_implementation,
-    do:
-      Application.get_env(:kafka_message_bus, :message_contracts)[
-        :message_data_factory_implementation
-      ]
+    do: Config.message_contracts!()[:message_data_factory_implementation]
 end
