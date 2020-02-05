@@ -16,7 +16,7 @@ defmodule KafkaMessageBus.Producer do
       case MessageDataValidator.validate(data, resource, action) do
         {:ok, :message_contract_excluded} ->
           Logger.info(fn ->
-            "Message contract (produce) excluded: resource=#{resource}, action=#{action}"
+            "Message contract (produce) excluded: resource=#{inspect(resource)}, action=#{inspect(action)}"
           end)
 
           produce(data, key, resource, action, opts, topic)
@@ -25,7 +25,7 @@ defmodule KafkaMessageBus.Producer do
           produce(message_data, key, resource, action, opts, topic)
 
         {:error, validation_errors} when is_list(validation_errors) ->
-          Logger.error(fn ->
+          Logger.warn(fn ->
             "Validation failed for message_data production: #{inspect(validation_errors)}\n#{
               produce_info
             }"
@@ -34,8 +34,8 @@ defmodule KafkaMessageBus.Producer do
           {:error, validation_errors}
 
         {:error, :unrecognized_message_data_type} ->
-          Logger.warn(fn ->
-            "Attempting to produce unrecognized message data type: #{produce_info}"
+          Logger.error(fn ->
+            "Attempting to produce unrecognized message data type: #{inspect(produce_info)}"
           end)
 
           # DEPRECATED: we currently try to consume messages that are not recognized
@@ -57,7 +57,7 @@ defmodule KafkaMessageBus.Producer do
     Logger.info(fn ->
       key_log = if key != nil, do: "(key: #{key}) ", else: ""
 
-      "Producing message on #{key_log}#{topic}/#{resource}: #{action}"
+      "Producing message on #{inspect(key_log)}#{inspect(topic)}/#{inspect(resource)}: #{inspect(action)}"
     end)
 
     opts = Keyword.put(opts, :key, key)
@@ -84,7 +84,7 @@ defmodule KafkaMessageBus.Producer do
     if action =~ "nation_" do
       Logger.warn(fn ->
         "Realm module is attempting to produce a message that appears to originate from nation: #{
-          produce_info
+          inspect(produce_info)
         }"
       end)
     end

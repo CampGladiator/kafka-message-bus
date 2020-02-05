@@ -14,13 +14,13 @@ defmodule KafkaMessageBus.ConsumerHandler do
   end
 
   def perform(module, message) do
-    Logger.info(fn ->
+    Logger.debug(fn ->
       "Running #{Utils.to_module_short_name(module)} message handler"
     end)
 
     case MessageDataValidator.validate(message) do
       {:ok, :message_contract_excluded} ->
-        Logger.debug(fn ->
+        Logger.info(fn ->
           "Message contract (consume) excluded: message=#{inspect(message)}"
         end)
 
@@ -63,7 +63,7 @@ defmodule KafkaMessageBus.ConsumerHandler do
         "Failed to process module. module: #{inspect(module)}" <>
           ", error: #{inspect(e)}" <> ", message: #{inspect(message)}"
 
-      Logger.warn(fn -> err_msg end)
+      Logger.error(fn -> err_msg end)
       {:error, e}
   end
 
