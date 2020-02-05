@@ -110,7 +110,7 @@ defmodule KafkaMessageBus.MessageDataValidatorTest do
 
     assert capture_log(fun) =~ "[info]  Creating for sample_resource and sample_action"
   end
-  
+
   test "validate/1 return error is map is missing any expected fields" do
     message_data = %{
       "id" => "ID_1",
