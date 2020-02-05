@@ -42,7 +42,7 @@ defmodule KafkaMessageBus.ConsumerHandlerTest do
 
     assert capture_log(fn ->
              ConsumerHandler.perform(OkConsumer, message)
-           end) =~ "[debug] Message contract (consume) excluded"
+           end) =~ "[info]  Message contract (consume) excluded"
   end
 
   test "invalid message_data" do

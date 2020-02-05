@@ -65,7 +65,7 @@ defmodule KafkaMessageBus.ProducerTest do
       end
 
       assert capture_log(fun) =~
-               "[info]  Message contract (produce) excluded: resource=sample_resource, action=sample_exclusion"
+               "[info]  Message contract (produce) excluded"
     end
 
     test "unhandled exceptions should be wrapped in an error tuple" do
