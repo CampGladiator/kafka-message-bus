@@ -46,5 +46,6 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
     |> validate_required_inclusion([:id, :alt_id])
   end
 
-  def new(%{} = message_data), do: map_struct(%__MODULE__{}, message_data)
+  def new(%{} = message_data),
+    do: map_struct(%__MODULE__{nested_optional: %SampleExclusion{}}, message_data)
 end

@@ -18,25 +18,7 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
       type's new/1 (factory) functions.
       """
       def map_struct(struct, %{} = message_data) do
-        mapped =
-          Enum.reduce(Map.to_list(struct), struct, fn {key, _}, acc ->
-            case MapUtil.safe_get(message_data, key) do
-              value when key in [:__meta__, :__struct__] ->
-                acc
-
-              value when is_map(value) === true ->
-                {:ok, struct_value} =
-                  Map.get(struct, key)
-                  |> map_struct(value)
-
-                %{acc | key => struct_value}
-
-              value ->
-                %{acc | key => value}
-            end
-          end)
-
-        {:ok, mapped}
+        struct |> MapUtil.deep_to_struct(message_data)
       end
 
       def new(nil), do: new(%{})

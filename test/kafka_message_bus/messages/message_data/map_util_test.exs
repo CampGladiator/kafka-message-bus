@@ -2,6 +2,7 @@ defmodule KafkaMessageBus.MapUtilTest do
   import ExUnit.CaptureLog
   use ExUnit.Case
   alias KafkaMessageBus.Messages.MessageData.MapUtil
+  alias KafkaMessageBus.Examples.{SampleMessageData, SampleExclusion}
   require Logger
 
   describe "safe_get" do
@@ -49,14 +50,46 @@ defmodule KafkaMessageBus.MapUtilTest do
     end
   end
 
-  describe "deep_from_struct" do
-    test "validate deep_from_struct converts properly" do
-      message_struct = %KafkaMessageBus.Examples.SampleMessageData{
+  describe "deep conversion functions" do
+    test "validate deep_to_struct converts properly" do
+      message_struct = %{
         id: "ID_1",
         field1: "the text",
         field2: "2019-12-19 19:22:26.779098Z",
         field3: "42",
-        nested_optional: %KafkaMessageBus.Examples.SampleExclusion{
+        nested_optional: %{
+          field1: "this field"
+        }
+      }
+
+      map =
+        MapUtil.deep_to_struct(
+          %SampleMessageData{nested_optional: %SampleExclusion{}},
+          message_struct
+        )
+
+      assert map ==
+               {:ok,
+                %SampleMessageData{
+                  id: "ID_1",
+                  field1: "the text",
+                  field2: "2019-12-19 19:22:26.779098Z",
+                  field3: "42",
+                  alt_id: nil,
+                  nested_optional: %SampleExclusion{
+                    field1: "this field",
+                    id: nil
+                  }
+                }}
+    end
+
+    test "validate deep_from_struct converts properly" do
+      message_struct = %SampleMessageData{
+        id: "ID_1",
+        field1: "the text",
+        field2: "2019-12-19 19:22:26.779098Z",
+        field3: "42",
+        nested_optional: %SampleExclusion{
           field1: "this field"
         }
       }
