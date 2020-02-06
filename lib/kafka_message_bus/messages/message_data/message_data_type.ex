@@ -24,12 +24,38 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
               value when key in [:__meta__, :__struct__] ->
                 acc
 
+              value when is_map(value) === true ->
+                {:ok, struct_value} =
+                  Map.get(struct, key)
+                  |> map_struct(value)
+
+                %{acc | key => struct_value}
+
               value ->
                 %{acc | key => value}
             end
           end)
 
         {:ok, mapped}
+      end
+
+      @doc """
+      This function is used to convert the stuct definition of message data
+      to a map which is needed for changeset validation.
+      """
+      def struct_map(struct) do
+        struct
+        |> Map.from_struct()
+        |> Map.to_list()
+        |> Enum.reduce(Map.from_struct(struct), fn {key, value}, acc ->
+          case value do
+            value when is_map(value) === true ->
+              %{acc | key => Map.from_struct(value)}
+
+            value ->
+              %{acc | key => value}
+          end
+        end)
       end
 
       def new(nil), do: new(%{})
