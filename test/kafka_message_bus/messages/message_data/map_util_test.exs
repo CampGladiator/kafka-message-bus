@@ -48,4 +48,33 @@ defmodule KafkaMessageBus.MapUtilTest do
                 "Unexpected param encountered. map: \"not-a-map\", field_name: \"test_id\""}
     end
   end
+
+  describe "deep_from_struct" do
+    test "validate deep_from_struct converts properly" do
+      message_struct = %KafkaMessageBus.Examples.SampleMessageData{
+        id: "ID_1",
+        field1: "the text",
+        field2: "2019-12-19 19:22:26.779098Z",
+        field3: "42",
+        nested_optional: %KafkaMessageBus.Examples.SampleExclusion{
+          field1: "this field"
+        }
+      }
+
+      map = MapUtil.deep_from_struct(message_struct)
+
+      assert map ==
+               %{
+                 id: "ID_1",
+                 field1: "the text",
+                 field2: "2019-12-19 19:22:26.779098Z",
+                 field3: "42",
+                 alt_id: nil,
+                 nested_optional: %{
+                   field1: "this field",
+                   id: nil
+                 }
+               }
+    end
+  end
 end
