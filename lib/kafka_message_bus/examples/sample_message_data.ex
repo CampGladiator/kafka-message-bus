@@ -46,6 +46,15 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
     |> validate_required_inclusion([:id, :alt_id])
   end
 
+  @doc """
+  This is an example of the expected factory function. If the type you are creating this function for
+  has embedded structs you will also want to create empty structs for those types too, as shown below.
+  """
   def new(%{} = message_data),
-    do: map_struct(%__MODULE__{nested_optional: %SampleExclusion{}}, message_data)
+    do: map_struct(
+      %__MODULE__{
+        nested_optional: %SampleExclusion{}
+      },
+      message_data
+    )
 end

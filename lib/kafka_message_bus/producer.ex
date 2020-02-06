@@ -16,7 +16,9 @@ defmodule KafkaMessageBus.Producer do
       case MessageDataValidator.validate(data, resource, action) do
         {:ok, :message_contract_excluded} ->
           Logger.info(fn ->
-            "Message contract (produce) excluded: resource=#{inspect(resource)}, action=#{inspect(action)}"
+            "Message contract (produce) excluded: resource=#{inspect(resource)}, action=#{
+              inspect(action)
+            }"
           end)
 
           produce(data, key, resource, action, opts, topic)
@@ -57,7 +59,9 @@ defmodule KafkaMessageBus.Producer do
     Logger.info(fn ->
       key_log = if key != nil, do: "(key: #{key}) ", else: ""
 
-      "Producing message on #{inspect(key_log)}#{inspect(topic)}/#{inspect(resource)}: #{inspect(action)}"
+      "Producing message on #{inspect(key_log)}#{inspect(topic)}/#{inspect(resource)}: #{
+        inspect(action)
+      }"
     end)
 
     opts = Keyword.put(opts, :key, key)

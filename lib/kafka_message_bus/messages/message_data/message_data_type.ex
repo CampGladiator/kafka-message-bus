@@ -17,9 +17,7 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
       This function is used to facilitate the definition of message data
       type's new/1 (factory) functions.
       """
-      def map_struct(struct, %{} = message_data) do
-        struct |> MapUtil.deep_to_struct(message_data)
-      end
+      def map_struct(struct, %{} = message_data), do: MapUtil.deep_to_struct(struct, message_data)
 
       def new(nil), do: new(%{})
 
