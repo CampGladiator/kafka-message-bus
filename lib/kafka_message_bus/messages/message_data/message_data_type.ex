@@ -39,32 +39,13 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataType do
         {:ok, mapped}
       end
 
-      @doc """
-      This function is used to convert the stuct definition of message data
-      to a map which is needed for changeset validation.
-      """
-      def struct_map(struct) do
-        struct
-        |> Map.from_struct()
-        |> Map.to_list()
-        |> Enum.reduce(Map.from_struct(struct), fn {key, value}, acc ->
-          case value do
-            value when is_map(value) === true ->
-              %{acc | key => Map.from_struct(value)}
-
-            value ->
-              %{acc | key => value}
-          end
-        end)
-      end
-
       def new(nil), do: new(%{})
 
       defimpl MessageData do
         def validate(message_data) do
           struct_type = message_data.__struct__
           struct = struct(struct_type)
-          changeset = struct_type.changeset(struct, Map.from_struct(message_data))
+          changeset = struct_type.changeset(struct, MapUtil.deep_from_struct(message_data))
 
           if changeset.valid?,
             do: {:ok, apply_changes(changeset)},
