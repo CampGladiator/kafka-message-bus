@@ -22,3 +22,6 @@ erl_crash.dump
 # IntelliJ
 .idea
 *.iml
+
+# asdf
+.tool-versions

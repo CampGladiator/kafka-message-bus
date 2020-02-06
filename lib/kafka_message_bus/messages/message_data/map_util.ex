@@ -5,6 +5,51 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
   require Logger
 
   @doc """
+  This function is used to facilitate the definition of message data
+  type's new/1 (factory) functions.
+  """
+  def deep_to_struct(struct, %{} = message_data) do
+    mapped =
+      Enum.reduce(Map.to_list(struct), struct, fn {key, _}, acc ->
+        case __MODULE__.safe_get(message_data, key) do
+          _value when key in [:__meta__, :__struct__] ->
+            acc
+
+          value when is_map(value) === true ->
+            {:ok, struct_value} =
+              Map.get(struct, key)
+              |> deep_to_struct(value)
+
+            %{acc | key => struct_value}
+
+          value ->
+            %{acc | key => value}
+        end
+      end)
+
+    {:ok, mapped}
+  end
+
+  @doc """
+  This function is used to convert the stuct definition of message data
+  to a map which is needed for changeset validation.
+  """
+  def deep_from_struct(struct) do
+    struct
+    |> Map.from_struct()
+    |> Map.to_list()
+    |> Enum.reduce(Map.from_struct(struct), fn {key, value}, acc ->
+      case value do
+        value when is_map(value) === true ->
+          %{acc | key => Map.from_struct(value)}
+
+        value ->
+          %{acc | key => value}
+      end
+    end)
+  end
+
+  @doc """
   Will attempt to retrieve from a map using an atom as the key. If no value is found,
   the function will attempt again after converting the atom to a string.
   """
