@@ -13,7 +13,13 @@ defmodule KafkaMessageBus.Adapters.Exq.Consumer do
 
     Utils.set_log_metadata(message)
 
-    :ok = consumer_handler.perform(module, message)
+    case consumer_handler.perform(module, message) do
+      :ok -> :ok
+      {:error, reason} ->
+        err_msg = "consumer_handler.perform failed due to: #{inspect(reason)}"
+        Logger.error fn -> err_msg end
+        raise reason
+    end
 
     Utils.clear_log_metadata()
   rescue
