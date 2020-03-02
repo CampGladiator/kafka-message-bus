@@ -2,6 +2,10 @@
 
 A general purpose message bus.
 
+## Releasing
+
+To release a new version of kafka_message_bus in hex be sure to update the 'version' number under 'project' in mix.exs.  
+
 ## Installation
 
 The package can be installed by adding `kafka_message_bus` to your list of dependencies in `mix.exs`:
