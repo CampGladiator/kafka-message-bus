@@ -39,9 +39,10 @@ defmodule KafkaMessageBus.Adapters.Exq.ConsumerTest do
         assert_raise(RuntimeError, fn ->
           Consumer.perform(module, json_data, MockConsumerHandler)
         end)
-     end
+      end
 
-      assert capture_log(fun) =~ "[error] consumer_handler.perform failed due to: \"Something went afoul!\""
+      assert capture_log(fun) =~
+               "[error] consumer_handler.perform failed due to: \"Something went afoul!\""
     end
   end
 end

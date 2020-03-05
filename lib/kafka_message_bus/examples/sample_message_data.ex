@@ -51,10 +51,11 @@ defmodule KafkaMessageBus.Examples.SampleMessageData do
   has embedded structs you will also want to create empty structs for those types too, as shown below.
   """
   def new(%{} = message_data),
-    do: map_struct(
-      %__MODULE__{
-        nested_optional: %SampleExclusion{}
-      },
-      message_data
-    )
+    do:
+      map_struct(
+        %__MODULE__{
+          nested_optional: %SampleExclusion{}
+        },
+        message_data
+      )
 end

@@ -36,7 +36,7 @@ defmodule KafkaMessageBus.Producer do
           {:error, validation_errors}
 
         {:error, :unrecognized_message_data_type} ->
-          Logger.error(fn ->
+          Logger.warn(fn ->
             "Attempting to produce unrecognized message data type: #{inspect(produce_info)}"
           end)
 
@@ -49,8 +49,14 @@ defmodule KafkaMessageBus.Producer do
     end
   rescue
     err ->
-      Logger.error(fn -> "Unhandled error encountered in Producer.produce/5: #{inspect(err)}" end)
-      {:error, err}
+      trace = Exception.format_stacktrace(__STACKTRACE__)
+
+      Logger.error(fn ->
+        "Unhandled error encountered in Producer.produce/5: #{inspect(err)}\n" <>
+          "stacktrace: #{trace}\n" <> "data: #{inspect(data)}"
+      end)
+
+      reraise err, __STACKTRACE__
   end
 
   defp produce(data, key, resource, action, opts, topic) do
@@ -59,7 +65,7 @@ defmodule KafkaMessageBus.Producer do
     Logger.info(fn ->
       key_log = if key != nil, do: "(key: #{key}) ", else: ""
 
-      "Producing message on #{inspect(key_log)}#{inspect(topic)}/#{inspect(resource)}: #{
+      "Producing message on #{inspect(key_log)}:#{inspect(topic)}:#{inspect(resource)}:#{
         inspect(action)
       }"
     end)
@@ -72,12 +78,15 @@ defmodule KafkaMessageBus.Producer do
       resource: resource,
       timestamp: DateTime.utc_now(),
       request_id: Keyword.get(Logger.metadata(), :request_id),
-      data: Map.delete(data, :__meta__)
+      data: remove_meta(data)
     }
     |> process_adapters(opts, topic)
   end
 
-  defp get_produce_info(data, key, resource, action, opts, topic) do
+  defp remove_meta(data) when is_map(data), do: Map.delete(data, :__meta__)
+  defp remove_meta(data), do: data
+
+  def get_produce_info(data, key, resource, action, opts, topic) do
     produce_info =
       "message_data: #{inspect(data)}, key: #{inspect(key)}, resource: #{inspect(resource)}, action: #{
         inspect(action)
@@ -92,5 +101,7 @@ defmodule KafkaMessageBus.Producer do
         }"
       end)
     end
+
+    produce_info
   end
 end
