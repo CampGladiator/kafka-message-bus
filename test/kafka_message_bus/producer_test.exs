@@ -81,7 +81,7 @@ defmodule KafkaMessageBus.ProducerTest do
         )
 
       assert result ==
-               "message_data: %{the_data: \"the data\"}, key: \"key\", resource: \"resource\", action: \"action\", topic: \"topic\", opts: [\"opts\"]"
+               "key: \"key\", resource: \"resource\", action: \"action\", topic: \"topic\", opts: [\"opts\"], message_data: %{the_data: \"the data\"}"
     end
   end
 end

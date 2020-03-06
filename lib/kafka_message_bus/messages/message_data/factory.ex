@@ -30,13 +30,13 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
       ) do
     case message_contract_exclusions do
       :none ->
-        on_create(data, resource, action, factory_implementation)
+        do_create(data, resource, action, factory_implementation)
 
       :all ->
         {:ok, :message_contract_excluded}
 
       exclusions when is_list(exclusions) ->
-        on_create(data, resource, action, exclusions, factory_implementation)
+        do_create_with_exclusions(data, resource, action, exclusions, factory_implementation)
 
       err ->
         Logger.error(fn ->
@@ -47,12 +47,12 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
     end
   end
 
-  defp on_create(_data, _resource, _action, _exclusions, nil),
+  defp do_create_with_exclusions(_data, _resource, _action, _exclusions, nil),
     do: {:error, :missing_factory_implementation}
 
-  defp on_create(data, resource, action, exclusions, factory_implementation)
+  defp do_create_with_exclusions(data, resource, action, exclusions, factory_implementation)
        when is_list(exclusions) do
-    case on_create(data, resource, action, factory_implementation) do
+    case do_create(data, resource, action, factory_implementation) do
       {:ok, data} ->
         if data.__struct__ in exclusions,
           do: {:ok, :message_contract_excluded},
@@ -63,9 +63,9 @@ defmodule KafkaMessageBus.Messages.MessageData.Factory do
     end
   end
 
-  defp on_create(_data, _resource, _action, nil), do: {:error, :missing_factory_implementation}
+  defp do_create(_data, _resource, _action, nil), do: {:error, :missing_factory_implementation}
 
-  defp on_create(data, resource, action, factory_implementation) do
+  defp do_create(data, resource, action, factory_implementation) do
     factory_implementation.on_create(data, resource, action)
   rescue
     err in UndefinedFunctionError ->
