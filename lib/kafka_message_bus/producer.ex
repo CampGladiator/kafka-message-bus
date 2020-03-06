@@ -4,15 +4,13 @@ defmodule KafkaMessageBus.Producer do
   by the KafkaMessageBus module.
   """
   alias KafkaMessageBus.{Config, MessageDataValidator}
-  import KafkaMessageBus.Producer.AdapterHandler
+  alias KafkaMessageBus.Producer.AdapterHandler
   require Logger
 
   def produce(data, key, resource, action, opts \\ []) do
     topic = Keyword.get(opts, :topic, Config.default_topic!())
 
-    produce_info = get_produce_info(data, key, resource, action, opts, topic)
-
-    if Enum.any?(get_adapters_for_topic(topic)) do
+    if Enum.any?(AdapterHandler.get_adapters_for_topic(topic)) do
       case MessageDataValidator.validate(data, resource, action) do
         {:ok, :message_contract_excluded} ->
           Logger.info(fn ->
@@ -21,45 +19,54 @@ defmodule KafkaMessageBus.Producer do
             }"
           end)
 
-          produce(data, key, resource, action, opts, topic)
+          on_produce(data, key, resource, action, opts, topic)
 
         {:ok, message_data} ->
-          produce(message_data, key, resource, action, opts, topic)
+          on_produce(message_data, key, resource, action, opts, topic)
 
         {:error, validation_errors} when is_list(validation_errors) ->
           Logger.warn(fn ->
             "Validation failed for message_data production: #{inspect(validation_errors)}\n#{
-              produce_info
+              get_produce_info(data, key, resource, action, opts, topic)
             }"
           end)
 
           {:error, validation_errors}
 
         {:error, :unrecognized_message_data_type} ->
-          Logger.error(fn ->
-            "Attempting to produce unrecognized message data type: #{inspect(produce_info)}"
+          Logger.warn(fn ->
+            "Attempting to produce unrecognized message data type: #{
+              get_produce_info(data, key, resource, action, opts, topic)
+            }"
           end)
 
           # DEPRECATED: we currently try to consume messages that are not recognized
           #   by the validator but want an error to be returned in the future
-          produce(data, key, resource, action, opts, topic)
+          on_produce(data, key, resource, action, opts, topic)
       end
     else
-      topic_adapters_not_found(topic)
+      AdapterHandler.topic_adapters_not_found(topic)
     end
   rescue
     err ->
-      Logger.error(fn -> "Unhandled error encountered in Producer.produce/5: #{inspect(err)}" end)
-      {:error, err}
+      trace = Exception.format_stacktrace(__STACKTRACE__)
+
+      Logger.error(fn ->
+        "Unhandled error encountered in Producer.produce/5: #{inspect(err)}\n" <>
+          "stacktrace: #{trace}\n" <>
+          "produce_info: #{get_produce_info(data, key, resource, action, opts, nil)}"
+      end)
+
+      reraise err, __STACKTRACE__
   end
 
-  defp produce(data, key, resource, action, opts, topic) do
+  def on_produce(data, key, resource, action, opts, topic, adapter_handler \\ AdapterHandler) do
     source = Keyword.get(opts, :source, Config.source!())
 
     Logger.info(fn ->
       key_log = if key != nil, do: "(key: #{key}) ", else: ""
 
-      "Producing message on #{inspect(key_log)}#{inspect(topic)}/#{inspect(resource)}: #{
+      "Producing message on #{inspect(key_log)}:#{inspect(topic)}:#{inspect(resource)}:#{
         inspect(action)
       }"
     end)
@@ -72,25 +79,28 @@ defmodule KafkaMessageBus.Producer do
       resource: resource,
       timestamp: DateTime.utc_now(),
       request_id: Keyword.get(Logger.metadata(), :request_id),
-      data: Map.delete(data, :__meta__)
+      data: remove_meta(data)
     }
-    |> process_adapters(opts, topic)
+    |> adapter_handler.process_adapters(opts, topic)
   end
 
-  defp get_produce_info(data, key, resource, action, opts, topic) do
-    produce_info =
-      "message_data: #{inspect(data)}, key: #{inspect(key)}, resource: #{inspect(resource)}, action: #{
-        inspect(action)
-      }, topic: #{inspect(topic)}, opts: #{inspect(opts)}"
+  defp remove_meta(data) when is_map(data), do: Map.drop(data, [:__meta__, :__struct__])
+  defp remove_meta(data), do: data
 
-    Logger.debug(fn -> "produce: #{produce_info}" end)
+  def get_produce_info(data, key, resource, action, opts, topic) do
+    produce_info =
+      "key: #{inspect(key)}, resource: #{inspect(resource)}, action: #{inspect(action)}, topic: #{
+        inspect(topic)
+      }, opts: #{inspect(opts)}, message_data: #{inspect(data)}"
 
     if action =~ "nation_" do
       Logger.warn(fn ->
         "Realm module is attempting to produce a message that appears to originate from nation: #{
-          inspect(produce_info)
+          produce_info
         }"
       end)
     end
+
+    produce_info
   end
 end

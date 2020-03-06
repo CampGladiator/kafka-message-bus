@@ -15,6 +15,9 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
           _value when key in [:__meta__, :__struct__] ->
             acc
 
+          %{__struct__: Ecto.Association.NotLoaded} ->
+            %{acc | key => nil}
+
           value when is_map(value) === true ->
             {:ok, struct_value} =
               Map.get(struct, key)
@@ -34,7 +37,7 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
   This function is used to convert the stuct definition of message data
   to a map which is needed for changeset validation.
   """
-  def deep_from_struct(struct) do
+  def deep_from_struct(%{__struct__: _} = struct) do
     struct
     |> Map.from_struct()
     |> Map.to_list()
@@ -48,6 +51,8 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
       end
     end)
   end
+
+  def deep_from_struct(struct) when is_map(struct), do: struct
 
   @doc """
   Will attempt to retrieve from a map using an atom as the key. If no value is found,

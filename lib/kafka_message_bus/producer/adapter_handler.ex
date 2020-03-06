@@ -26,8 +26,6 @@ defmodule KafkaMessageBus.Producer.AdapterHandler do
       {adapter, adapter.produce(message, opts), message}
     end)
     |> Enum.each(&handle_adapter_result/1)
-
-    :ok
   end
 
   defp handle_adapter_result({adapter, :ok, _message}) do

@@ -66,10 +66,22 @@ defmodule KafkaMessageBus.ProducerTest do
 
       assert capture_log(fun) =~ "[info]  Message contract (produce) excluded"
     end
+  end
 
-    test "unhandled exceptions should be wrapped in an error tuple" do
-      {:error, err_msg} = Producer.produce("invalid message", "key", "resource", "nation_action")
-      assert err_msg == %BadMapError{term: "invalid message"}
+  describe "get_produce_info" do
+    test "should return expected value" do
+      result =
+        Producer.get_produce_info(
+          %{the_data: "the data"},
+          "key",
+          "resource",
+          "action",
+          ["opts"],
+          "topic"
+        )
+
+      assert result ==
+               "key: \"key\", resource: \"resource\", action: \"action\", topic: \"topic\", opts: [\"opts\"], message_data: %{the_data: \"the data\"}"
     end
   end
 end

@@ -59,9 +59,11 @@ defmodule KafkaMessageBus.ConsumerHandler do
     end
   rescue
     e ->
+      trace = Exception.format_stacktrace(__STACKTRACE__)
+
       err_msg =
         "Failed to process module. module: #{inspect(module)}" <>
-          ", error: #{inspect(e)}" <> ", message: #{inspect(message)}"
+          ", error: #{inspect(e)}" <> ", trace: #{trace}" <> ", message: #{inspect(message)}"
 
       Logger.error(fn -> err_msg end)
       {:error, e}

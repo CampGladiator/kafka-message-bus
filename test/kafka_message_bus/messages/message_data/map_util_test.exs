@@ -50,7 +50,7 @@ defmodule KafkaMessageBus.MapUtilTest do
     end
   end
 
-  describe "deep conversion functions" do
+  describe "deep_to_struct" do
     test "validate deep_to_struct converts properly" do
       message_struct = %{
         id: "ID_1",
@@ -83,6 +83,25 @@ defmodule KafkaMessageBus.MapUtilTest do
                 }}
     end
 
+    test "should ignore Ecto.Association.NotLoaded" do
+      message_struct = %{
+        id: "ID_1",
+        field1: "the text",
+        field2: "2019-12-19 19:22:26.779098Z",
+        field3: struct(Ecto.Association.NotLoaded, %{})
+      }
+
+      {:ok, map} =
+        MapUtil.deep_to_struct(
+          %SampleMessageData{nested_optional: %SampleExclusion{}},
+          message_struct
+        )
+
+      refute map.field3
+    end
+  end
+
+  describe "deep_from_struct" do
     test "validate deep_from_struct converts properly" do
       message_struct = %SampleMessageData{
         id: "ID_1",
