@@ -23,7 +23,7 @@ defmodule KafkaMessageBus.Adapters.TestAdapter do
     }
   end
 
-  def produce(%{bad_message: _bad_message}, opts), do: {:error, :something_bad_happened}
+  def produce(%{bad_message: _bad_message}, _opts), do: {:error, :something_bad_happened}
 
   def produce(message, opts) do
     topic = Keyword.get(opts, :topic, Config.default_topic!())

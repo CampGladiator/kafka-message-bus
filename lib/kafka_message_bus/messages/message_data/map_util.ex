@@ -21,6 +21,10 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
           %{__struct__: Ecto.Association.NotLoaded} ->
             %{acc | key => nil}
 
+          %{__struct__: struct_type} = value
+          when struct_type in [DateTime, Time, Date, NaiveDateTime] ->
+            %{acc | key => value}
+
           value when is_map(value) === true ->
             {:ok, struct_value} =
               Map.get(struct, key)

@@ -6,7 +6,7 @@ defmodule KafkaMessageBus.Messages.MessageData.MessageDataTypeTest do
   alias KafkaMessageBus.Messages.MessageData
 
   describe "map_struct" do
-    test "should do a deep " do
+    test "should do a deep copy" do
       data = %{
         "id" => nil,
         "alt_id" => 12_345,
