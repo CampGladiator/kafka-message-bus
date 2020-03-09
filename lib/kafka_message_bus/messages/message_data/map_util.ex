@@ -4,7 +4,8 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
   """
   require Logger
 
-  def deep_to_struct(nil, %{} = message_data), do: {:ok, nil}
+  def deep_to_struct(nil, %{} = _message_data), do: {:ok, nil}
+  def deep_to_struct(struct, nil), do: {:ok, struct}
 
   @doc """
   This function is used to facilitate the definition of message data
@@ -36,7 +37,7 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
   end
 
   @doc """
-  This function is used to convert the stuct definition of message data
+  This function is used to convert the struct definition of message data
   to a map which is needed for changeset validation.
   """
   def deep_from_struct(%{__struct__: _} = struct) do
@@ -55,6 +56,7 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
   end
 
   def deep_from_struct(struct) when is_map(struct), do: struct
+  def deep_from_struct(nil), do: nil
 
   @doc """
   Will attempt to retrieve from a map using an atom as the key. If no value is found,
