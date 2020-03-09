@@ -51,6 +51,26 @@ defmodule KafkaMessageBus.MapUtilTest do
   end
 
   describe "deep_to_struct" do
+    test "should not accept nil for struct" do
+      message_struct = %{
+        id: "ID_1",
+        field1: "the text",
+        field2: "2019-12-19 19:22:26.779098Z",
+        field3: "42",
+        nested_optional: %{
+          field1: "this field"
+        }
+      }
+
+      {:ok, map} =
+        MapUtil.deep_to_struct(
+          %SampleMessageData{nested_optional: nil},
+          message_struct
+        )
+
+      refute map.nested_optional
+    end
+
     test "validate deep_to_struct converts properly" do
       message_struct = %{
         id: "ID_1",
@@ -83,7 +103,7 @@ defmodule KafkaMessageBus.MapUtilTest do
                 }}
     end
 
-    test "should ignore Ecto.Association.NotLoaded" do
+    test "should ignore Ecto.Association.NotLoaded and treat as nil" do
       message_struct = %{
         id: "ID_1",
         field1: "the text",
@@ -98,6 +118,26 @@ defmodule KafkaMessageBus.MapUtilTest do
         )
 
       refute map.field3
+    end
+
+    test "should handle nil struct param" do
+      message_struct = %{
+        id: "ID_1",
+        field1: "the text",
+        field2: "2019-12-19 19:22:26.779098Z",
+        field3: struct(Ecto.Association.NotLoaded, %{})
+      }
+
+      {:ok, map} = MapUtil.deep_to_struct(nil, message_struct)
+
+      refute map
+    end
+
+    test "should handle nil map param" do
+      struct = %SampleMessageData{nested_optional: %SampleExclusion{}}
+      {:ok, new_struct} = MapUtil.deep_to_struct(struct, nil)
+
+      assert new_struct == struct
     end
   end
 
@@ -127,6 +167,32 @@ defmodule KafkaMessageBus.MapUtilTest do
                    id: nil
                  }
                }
+    end
+
+    test "should handle nil field values" do
+      message_struct = %SampleMessageData{
+        id: "ID_1",
+        field1: "the text",
+        field2: "2019-12-19 19:22:26.779098Z",
+        field3: "42",
+        nested_optional: nil
+      }
+
+      map = MapUtil.deep_from_struct(message_struct)
+
+      assert map ==
+               %{
+                 id: "ID_1",
+                 field1: "the text",
+                 field2: "2019-12-19 19:22:26.779098Z",
+                 field3: "42",
+                 alt_id: nil,
+                 nested_optional: nil
+               }
+    end
+
+    test "should handle nil param" do
+      refute MapUtil.deep_from_struct(nil)
     end
   end
 end
