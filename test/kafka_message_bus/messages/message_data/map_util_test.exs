@@ -103,6 +103,41 @@ defmodule KafkaMessageBus.MapUtilTest do
                 }}
     end
 
+    test "should not nil out datetimes" do
+      message_struct = %{
+        id: "ID_1",
+        field1: "the text",
+        field2: DateTime.from_iso8601("2019-12-19 19:22:26.779098Z"),
+        field3: "42",
+        nested_optional: %{
+          field1: "this field"
+        }
+      }
+
+      map =
+        MapUtil.deep_to_struct(
+          %SampleMessageData{
+            field2: DateTime.from_iso8601("2019-12-19 19:22:26.779098Z"),
+            nested_optional: %SampleExclusion{}
+          },
+          message_struct
+        )
+
+      assert map ==
+               {:ok,
+                %SampleMessageData{
+                  id: "ID_1",
+                  field1: "the text",
+                  field2: DateTime.from_iso8601("2019-12-19 19:22:26.779098Z"),
+                  field3: "42",
+                  alt_id: nil,
+                  nested_optional: %SampleExclusion{
+                    field1: "this field",
+                    id: nil
+                  }
+                }}
+    end
+
     test "should ignore Ecto.Association.NotLoaded and treat as nil" do
       message_struct = %{
         id: "ID_1",
@@ -160,6 +195,33 @@ defmodule KafkaMessageBus.MapUtilTest do
                  id: "ID_1",
                  field1: "the text",
                  field2: "2019-12-19 19:22:26.779098Z",
+                 field3: "42",
+                 alt_id: nil,
+                 nested_optional: %{
+                   field1: "this field",
+                   id: nil
+                 }
+               }
+    end
+
+    test "should not nil out datetimes" do
+      message_struct = %SampleMessageData{
+        id: "ID_1",
+        field1: "the text",
+        field2: DateTime.from_iso8601("2019-12-19 19:22:26.779098Z"),
+        field3: "42",
+        nested_optional: %SampleExclusion{
+          field1: "this field"
+        }
+      }
+
+      map = MapUtil.deep_from_struct(message_struct)
+
+      assert map ==
+               %{
+                 id: "ID_1",
+                 field1: "the text",
+                 field2: DateTime.from_iso8601("2019-12-19 19:22:26.779098Z"),
                  field3: "42",
                  alt_id: nil,
                  nested_optional: %{
