@@ -22,6 +22,7 @@ defmodule KafkaMessageBus.Messages.MessageData.SampleMessageDataFactoryImplement
       assert result == :unrecognized_message_data_type
     end
 
-    assert capture_log(fun) =~ "[warn]  Encountered unrecognized message type for resource: unknown, action: sample_action."
+    assert capture_log(fun) =~
+             "[warn]  Encountered unrecognized message type for resource: unknown, action: sample_action."
   end
 end

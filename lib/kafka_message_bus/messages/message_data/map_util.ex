@@ -4,6 +4,8 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
   """
   require Logger
 
+  def deep_to_struct(nil, %{} = message_data), do: {:ok, nil}
+
   @doc """
   This function is used to facilitate the definition of message data
   type's new/1 (factory) functions.

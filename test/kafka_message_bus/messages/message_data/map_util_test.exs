@@ -51,6 +51,26 @@ defmodule KafkaMessageBus.MapUtilTest do
   end
 
   describe "deep_to_struct" do
+    test "should not accept nil for struct" do
+      message_struct = %{
+        id: "ID_1",
+        field1: "the text",
+        field2: "2019-12-19 19:22:26.779098Z",
+        field3: "42",
+        nested_optional: %{
+          field1: "this field"
+        }
+      }
+
+      {:ok, map} =
+        MapUtil.deep_to_struct(
+          %SampleMessageData{nested_optional: nil},
+          message_struct
+        )
+
+      refute map.nested_optional
+    end
+
     test "validate deep_to_struct converts properly" do
       message_struct = %{
         id: "ID_1",
