@@ -4,6 +4,7 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
   """
   require Logger
 
+  def deep_to_struct(struct, message_data \\ %{})
   def deep_to_struct(nil, %{} = _message_data), do: {:ok, nil}
   def deep_to_struct(struct, nil), do: {:ok, struct}
 
@@ -27,7 +28,8 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
 
           value when is_map(value) === true ->
             {:ok, struct_value} =
-              Map.get(struct, key)
+              struct
+              |> Map.get(key)
               |> deep_to_struct(value)
 
             %{acc | key => struct_value}
