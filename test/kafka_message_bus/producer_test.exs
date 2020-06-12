@@ -78,6 +78,9 @@ defmodule KafkaMessageBus.ProducerTest do
 
       assert :ok == Producer.produce(message, "key", "sample_resource", "sample_action")
       assert [produced_message] = TestAdapter.get_produced_messages()
+      assert produced_message["data"]["id"] == message.id
+      assert produced_message["data"]["field1"] == message.field1
+      assert produced_message["data"]["field2"] == message.field2
       assert is_nil(produced_message["data"]["field3"])
     end
   end

@@ -3,7 +3,6 @@ defmodule KafkaMessageBus.Producer do
   This is the module that contains the producer functions. It is used directly
   by the KafkaMessageBus module.
   """
-  alias KafkaMessageBus.Messages.MessageData.MapUtil
   alias KafkaMessageBus.Producer.AdapterHandler
   alias KafkaMessageBus.{Config, MessageDataValidator}
   require Logger
@@ -80,18 +79,27 @@ defmodule KafkaMessageBus.Producer do
       resource: resource,
       timestamp: DateTime.utc_now(),
       request_id: Keyword.get(Logger.metadata(), :request_id),
-      data: remove_meta(data)
+      data: remove_invalid_elements(data)
     }
     |> adapter_handler.process_adapters(opts, topic)
   end
 
-  defp remove_meta(data) when is_map(data) do
-    with {:ok, updated_data} <- MapUtil.deep_to_struct(data) do
-      Map.drop(updated_data, [:__meta__, :__struct__])
-    end
+  defp remove_invalid_elements(data) when is_map(data) do
+    data
+    |> Map.to_list()
+    |> Enum.reject(&is_invalid_element?/1)
+    |> Map.new()
   end
 
-  defp remove_meta(data), do: data
+  defp remove_invalid_elements(data), do: data
+
+  defp is_invalid_element?(element) do
+    case element do
+      {key, _} when key in [:__meta__, :__struct__] -> true
+      {_, %{__struct__: Ecto.Association.NotLoaded}} -> true
+      {_, _} -> false
+    end
+  end
 
   def get_produce_info(data, key, resource, action, opts, topic) do
     produce_info =
