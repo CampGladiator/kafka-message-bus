@@ -27,7 +27,8 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
 
           value when is_map(value) === true ->
             {:ok, struct_value} =
-              Map.get(struct, key)
+              struct
+              |> Map.get(key)
               |> deep_to_struct(value)
 
             %{acc | key => struct_value}
