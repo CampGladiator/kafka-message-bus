@@ -73,7 +73,7 @@ defmodule KafkaMessageBus.Producer do
 
     opts = Keyword.put(opts, :key, key)
 
-    %{
+    message = %{
       source: source,
       action: action,
       resource: resource,
@@ -81,7 +81,8 @@ defmodule KafkaMessageBus.Producer do
       request_id: Keyword.get(Logger.metadata(), :request_id),
       data: remove_invalid_elements(data)
     }
-    |> adapter_handler.process_adapters(opts, topic)
+
+    adapter_handler.process_adapters(message, opts, topic)
   end
 
   defp remove_invalid_elements(data) when is_map(data) do
