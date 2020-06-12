@@ -3,8 +3,9 @@ defmodule KafkaMessageBus.Producer do
   This is the module that contains the producer functions. It is used directly
   by the KafkaMessageBus module.
   """
-  alias KafkaMessageBus.{Config, MessageDataValidator}
+  alias KafkaMessageBus.Messages.MessageData.MapUtil
   alias KafkaMessageBus.Producer.AdapterHandler
+  alias KafkaMessageBus.{Config, MessageDataValidator}
   require Logger
 
   def produce(data, key, resource, action, opts \\ []) do
@@ -84,7 +85,12 @@ defmodule KafkaMessageBus.Producer do
     |> adapter_handler.process_adapters(opts, topic)
   end
 
-  defp remove_meta(data) when is_map(data), do: Map.drop(data, [:__meta__, :__struct__])
+  defp remove_meta(data) when is_map(data) do
+    with {:ok, updated_data} <- MapUtil.deep_to_struct(data) do
+      Map.drop(updated_data, [:__meta__, :__struct__])
+    end
+  end
+
   defp remove_meta(data), do: data
 
   def get_produce_info(data, key, resource, action, opts, topic) do

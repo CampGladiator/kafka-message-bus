@@ -3,6 +3,7 @@ defmodule KafkaMessageBus.ProducerTest do
   use ExUnit.Case
 
   alias KafkaMessageBus.Adapters.TestAdapter
+  alias KafkaMessageBus.Examples.SampleMessageData
   alias KafkaMessageBus.Producer
 
   @moduletag :capture_log
@@ -65,6 +66,19 @@ defmodule KafkaMessageBus.ProducerTest do
       end
 
       assert capture_log(fun) =~ "[info]  Message contract (produce) excluded"
+    end
+
+    test "it produces messages without Ecto Association Not Loaded" do
+      message = %SampleMessageData{
+        id: "ID_1",
+        field1: "abc",
+        field2: "2019-10-11T10:09:08Z",
+        field3: struct(Ecto.Association.NotLoaded, %{})
+      }
+
+      assert :ok == Producer.produce(message, "key", "sample_resource", "sample_action")
+      assert [produced_message] = TestAdapter.get_produced_messages()
+      assert is_nil(produced_message["data"]["field3"])
     end
   end
 
