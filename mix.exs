@@ -8,7 +8,7 @@ defmodule KafkaMessageBus.Mixfile do
       elixir: "~> 1.7",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      aliases: aliases(),
+      aliases: [],
       deps: deps(),
       description: description(),
       package: package(),
@@ -59,12 +59,6 @@ defmodule KafkaMessageBus.Mixfile do
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:phoenix_ecto, "~> 3.0"},
       {:faker, "~> 0.13", only: :test}
-    ]
-  end
-
-  defp aliases do
-    [
-      lint: ["credo --strict"]
     ]
   end
 end
