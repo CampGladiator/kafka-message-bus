@@ -2,7 +2,7 @@ defmodule KafkaMessageBus.MapUtilTest do
   import ExUnit.CaptureLog
   use ExUnit.Case
   alias KafkaMessageBus.Messages.MessageData.MapUtil
-  alias KafkaMessageBus.Examples.{SampleMessageData, SampleExclusion}
+  alias KafkaMessageBus.Examples.{SampleExclusion, SampleMessageData}
   require Logger
 
   describe "safe_get" do
