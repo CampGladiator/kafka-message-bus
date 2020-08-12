@@ -41,8 +41,7 @@ defmodule KafkaMessageBus.Producer.AdapterHandlerTest do
 
       assert capture_log(fun) =~ "[debug] Producing message with TestAdapter adapter"
 
-      assert capture_log(fun) =~
-               "[error] Failed to send message using TestAdapter: {:error, :something_bad_happened}"
+      assert capture_log(fun) =~ "[error] Failed to send message using TestAdapter: {:error, :something_bad_happened}"
     end
 
     test "should return error if provided empty list of adapters" do

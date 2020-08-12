@@ -60,9 +60,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
 
       {:error, reason} ->
         Logger.error(fn ->
-          "Failed to run handler - will produce `dead_letter_queue` message. Reason: #{
-            inspect(reason)
-          }"
+          "Failed to run handler - will produce `dead_letter_queue` message. Reason: #{inspect(reason)}"
         end)
 
         message = %{

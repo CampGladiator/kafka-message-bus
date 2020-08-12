@@ -14,9 +14,7 @@ defmodule KafkaMessageBus.Producer do
       case MessageDataValidator.validate(data, resource, action) do
         {:ok, :message_contract_excluded} ->
           Logger.info(fn ->
-            "Message contract (produce) excluded: resource=#{inspect(resource)}, action=#{
-              inspect(action)
-            }"
+            "Message contract (produce) excluded: resource=#{inspect(resource)}, action=#{inspect(action)}"
           end)
 
           on_produce(data, key, resource, action, opts, topic)
@@ -53,8 +51,7 @@ defmodule KafkaMessageBus.Producer do
 
       Logger.error(fn ->
         "Unhandled error encountered in Producer.produce/5: #{inspect(err)}\n" <>
-          "stacktrace: #{trace}\n" <>
-          "produce_info: #{get_produce_info(data, key, resource, action, opts, nil)}"
+          "stacktrace: #{trace}\n" <> "produce_info: #{get_produce_info(data, key, resource, action, opts, nil)}"
       end)
 
       reraise err, __STACKTRACE__
@@ -66,9 +63,7 @@ defmodule KafkaMessageBus.Producer do
     Logger.info(fn ->
       key_log = if key != nil, do: "(key: #{key}) ", else: ""
 
-      "Producing message on #{inspect(key_log)}:#{inspect(topic)}:#{inspect(resource)}:#{
-        inspect(action)
-      }"
+      "Producing message on #{inspect(key_log)}:#{inspect(topic)}:#{inspect(resource)}:#{inspect(action)}"
     end)
 
     opts = Keyword.put(opts, :key, key)
@@ -104,15 +99,13 @@ defmodule KafkaMessageBus.Producer do
 
   def get_produce_info(data, key, resource, action, opts, topic) do
     produce_info =
-      "key: #{inspect(key)}, resource: #{inspect(resource)}, action: #{inspect(action)}, topic: #{
-        inspect(topic)
-      }, opts: #{inspect(opts)}, message_data: #{inspect(data)}"
+      "key: #{inspect(key)}, resource: #{inspect(resource)}, action: #{inspect(action)}, topic: #{inspect(topic)}, opts: #{
+        inspect(opts)
+      }, message_data: #{inspect(data)}"
 
     if action =~ "nation_" do
       Logger.warn(fn ->
-        "Realm module is attempting to produce a message that appears to originate from nation: #{
-          produce_info
-        }"
+        "Realm module is attempting to produce a message that appears to originate from nation: #{produce_info}"
       end)
     end
 

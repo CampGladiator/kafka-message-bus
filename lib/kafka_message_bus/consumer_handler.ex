@@ -32,9 +32,7 @@ defmodule KafkaMessageBus.ConsumerHandler do
 
       {:error, [] = validation_errors} ->
         Logger.warn(fn ->
-          "Validation failed for message_data consumption: #{inspect(validation_errors)}\n#{
-            inspect(message)
-          }"
+          "Validation failed for message_data consumption: #{inspect(validation_errors)}\n#{inspect(message)}"
         end)
 
         {:error, validation_errors}

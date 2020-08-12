@@ -14,8 +14,7 @@ defmodule KafkaMessageBus.Adapters.Exq.ConsumerTest do
 
       assert capture_log(fun) =~ "[info]  Received Exq message"
 
-      assert capture_log(fun) =~
-               "MockConsumerHandler: %{\"field1\" => \"value1\", \"field2\" => \"value2\"}"
+      assert capture_log(fun) =~ "MockConsumerHandler: %{\"field1\" => \"value1\", \"field2\" => \"value2\"}"
     end
 
     test "rethrown exceptions" do
@@ -41,8 +40,7 @@ defmodule KafkaMessageBus.Adapters.Exq.ConsumerTest do
         end)
       end
 
-      assert capture_log(fun) =~
-               "[error] consumer_handler.perform failed due to: \"Something went afoul!\""
+      assert capture_log(fun) =~ "[error] consumer_handler.perform failed due to: \"Something went afoul!\""
     end
   end
 end

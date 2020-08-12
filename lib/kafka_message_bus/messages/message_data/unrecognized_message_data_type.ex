@@ -8,9 +8,7 @@ defmodule KafkaMessageBus.Messages.MessageData.UnrecognizedMessageDataType do
         require Logger
 
         fn ->
-          "Encountered unrecognized message type for resource: #{resource}, action: #{action}. #{
-            inspect(data)
-          }"
+          "Encountered unrecognized message type for resource: #{resource}, action: #{action}. #{inspect(data)}"
         end
         |> Logger.warn()
 

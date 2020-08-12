@@ -62,8 +62,7 @@ defmodule KafkaMessageBus.ConsumerHandlerTest do
       assert err_list == [{:field2, {"is invalid", [type: :utc_datetime, validation: :cast]}}]
     end
 
-    assert capture_log(fun) =~
-             "Unexpected response encountered when validating consumer message data"
+    assert capture_log(fun) =~ "Unexpected response encountered when validating consumer message data"
   end
 
   test "unrecognized action will attempt to process anyway" do

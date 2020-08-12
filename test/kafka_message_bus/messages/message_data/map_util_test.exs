@@ -45,8 +45,7 @@ defmodule KafkaMessageBus.MapUtilTest do
 
     test "trying to get from types other than maps results in an error" do
       assert MapUtil.safe_get("not-a-map", "test_id") ==
-               {:error,
-                "Unexpected param encountered. map: \"not-a-map\", field_name: \"test_id\""}
+               {:error, "Unexpected param encountered. map: \"not-a-map\", field_name: \"test_id\""}
     end
   end
 

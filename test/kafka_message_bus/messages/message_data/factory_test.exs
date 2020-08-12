@@ -27,8 +27,7 @@ defmodule KafkaMessageBus.Messages.MessageData.FactoryTest do
 
     test "exclusions list returns message to bypass message enforcement on factory match" do
       fun = fn ->
-        {:ok, sample_data} =
-          Factory.create(%{}, "sample_resource", "sample_action", [SampleMessageData])
+        {:ok, sample_data} = Factory.create(%{}, "sample_resource", "sample_action", [SampleMessageData])
 
         assert sample_data == :message_contract_excluded
       end
@@ -55,8 +54,7 @@ defmodule KafkaMessageBus.Messages.MessageData.FactoryTest do
         assert err_msg == :unexpected_message_contract_exclusions
       end
 
-      assert capture_log(fun) =~
-               "[error] Unexpected value for message_contract_exclusions: \"not valid\""
+      assert capture_log(fun) =~ "[error] Unexpected value for message_contract_exclusions: \"not valid\""
     end
   end
 
