@@ -38,8 +38,7 @@ defmodule KafkaMessageBus.ConfigTest do
     test "message_contracts" do
       assert Config.message_contracts!() == [
                exclusions: [KafkaMessageBus.Examples.SampleExclusion],
-               message_data_factory_implementation:
-                 KafkaMessageBus.Examples.SampleMessageDataFactoryImplementation
+               message_data_factory_implementation: KafkaMessageBus.Examples.SampleMessageDataFactoryImplementation
              ]
     end
   end

@@ -87,9 +87,7 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
   Default function returns an error.
   """
   def safe_get(map, field_name),
-    do:
-      {:error,
-       "Unexpected param encountered. map: #{inspect(map)}, field_name: #{inspect(field_name)}"}
+    do: {:error, "Unexpected param encountered. map: #{inspect(map)}, field_name: #{inspect(field_name)}"}
 
   defp atom_to_string(nil, map, field_name), do: Map.get(map, Atom.to_string(field_name))
   defp atom_to_string(value, _map, _field_name), do: value
@@ -98,8 +96,7 @@ defmodule KafkaMessageBus.Messages.MessageData.MapUtil do
     Map.get(map, String.to_existing_atom(field_name))
   rescue
     e ->
-      err_msg =
-        "Failed to convert field_name '#{field_name}' to an existing atom. ERR: #{inspect(e)}"
+      err_msg = "Failed to convert field_name '#{field_name}' to an existing atom. ERR: #{inspect(e)}"
 
       Logger.warn(fn -> err_msg end)
       {:error, err_msg}

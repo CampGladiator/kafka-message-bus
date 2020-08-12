@@ -5,8 +5,7 @@ defmodule KafkaMessageBus.Messages.MessageData.SampleMessageDataFactoryImplement
 
   test "returns mapped message data types" do
     fun = fn ->
-      {:ok, result} =
-        SampleMessageDataFactoryImplementation.on_create(%{}, "sample_resource", "sample_action")
+      {:ok, result} = SampleMessageDataFactoryImplementation.on_create(%{}, "sample_resource", "sample_action")
 
       assert result.__struct__ == KafkaMessageBus.Examples.SampleMessageData
     end
@@ -16,8 +15,7 @@ defmodule KafkaMessageBus.Messages.MessageData.SampleMessageDataFactoryImplement
 
   test "can be validated" do
     fun = fn ->
-      {:error, result} =
-        SampleMessageDataFactoryImplementation.on_create(%{}, "unknown", "sample_action")
+      {:error, result} = SampleMessageDataFactoryImplementation.on_create(%{}, "unknown", "sample_action")
 
       assert result == :unrecognized_message_data_type
     end

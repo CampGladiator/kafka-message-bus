@@ -75,8 +75,7 @@ defmodule KafkaMessageBus.MessageDataValidatorTest do
 
       assert Enum.count(err_list) == 1
 
-      assert Enum.at(err_list, 0) ==
-               {:field2, {"is invalid", [type: :utc_datetime, validation: :cast]}}
+      assert Enum.at(err_list, 0) == {:field2, {"is invalid", [type: :utc_datetime, validation: :cast]}}
     end
 
     assert capture_log(fun) =~ "[info]  Creating for sample_resource and sample_action"
