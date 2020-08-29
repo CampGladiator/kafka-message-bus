@@ -1,4 +1,9 @@
 defmodule KafkaMessageBus.Producer do
+  @moduledoc """
+  This is the module that contains the producer functions. It is used directly
+  by the KafkaMessageBus module.
+  """
+
   alias KafkaMessageBus.{Config, Utils}
 
   require Logger
@@ -34,20 +39,23 @@ defmodule KafkaMessageBus.Producer do
     |> case do
       [] ->
         Logger.error(fn -> "Found no adapters for #{topic}" end)
-
         {:error, :topic_not_found}
 
       adapters ->
         adapters
-        |> Enum.map(fn adapter ->
-          Logger.debug(fn ->
-            "Producing message with #{Utils.to_module_short_name(adapter)} adapter"
-          end)
-
-          {adapter, adapter.produce(message, opts)}
-        end)
+        |> produce_messages()
         |> Enum.each(&handle_adapter_result/1)
     end
+  end
+
+  defp produce_messages(adapters) do
+    Enum.map(adapters, fn adapter ->
+      Logger.debug(fn ->
+        "Producing message with #{Utils.to_module_short_name(adapter)} adapter"
+      end)
+
+      {adapter, adapter.produce(message, opts)}
+    end)
   end
 
   defp handle_adapter_result({adapter, :ok}) do

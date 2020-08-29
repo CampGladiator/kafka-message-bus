@@ -1,8 +1,8 @@
 defmodule KafkaMessageBus.ProducerTest do
   use ExUnit.Case
 
-  alias KafkaMessageBus.Producer
   alias KafkaMessageBus.Adapters.TestAdapter
+  alias KafkaMessageBus.Producer
 
   @moduletag :capture_log
 

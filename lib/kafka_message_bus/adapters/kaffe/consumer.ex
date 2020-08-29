@@ -1,4 +1,8 @@
 defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
+  @moduledoc """
+  Consumer module for Kaffe (Kafka).
+  """
+
   alias KafkaMessageBus.{ConsumerHandler, Utils}
 
   require Logger

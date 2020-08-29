@@ -1,8 +1,12 @@
 defmodule KafkaMessageBus.Adapters.Exq do
+  @moduledoc """
+  Implements adapter behavior for Exq (a job processing library for Elixir).
+  """
+
   alias KafkaMessageBus.{
-    Config,
     Adapter,
-    Adapters.Exq.Consumer
+    Adapters.Exq.Consumer,
+    Config
   }
 
   require Logger
