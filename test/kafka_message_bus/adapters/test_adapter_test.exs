@@ -23,8 +23,7 @@ defmodule KafkaMessageBus.Adapters.TestAdapterTest do
 
   describe "getting specific produced messages" do
     test "it should return an empty list if no messages are produced with filters" do
-      messages =
-        TestAdapter.get_produced_messages("default_topic", "some_resource", "some_action")
+      messages = TestAdapter.get_produced_messages("default_topic", "some_resource", "some_action")
 
       assert Enum.empty?(messages)
     end
@@ -37,9 +36,7 @@ defmodule KafkaMessageBus.Adapters.TestAdapterTest do
       KafkaMessageBus.produce(first_message, "key", "resource", "action")
       KafkaMessageBus.produce(second_message, "key", "resource", "action")
 
-      KafkaMessageBus.produce(third_message, "key", "other_resource", "action",
-        topic: "secondary_topic"
-      )
+      KafkaMessageBus.produce(third_message, "key", "other_resource", "action", topic: "secondary_topic")
 
       produced_messages = TestAdapter.get_produced_messages("default_topic", "resource", "action")
 
@@ -92,9 +89,7 @@ defmodule KafkaMessageBus.Adapters.TestAdapterTest do
       parent = self()
 
       spawn(fn ->
-        KafkaMessageBus.produce(second_message, "key", "other_resource", "action",
-          topic: "secondary_topic"
-        )
+        KafkaMessageBus.produce(second_message, "key", "other_resource", "action", topic: "secondary_topic")
 
         send(parent, :done)
       end)

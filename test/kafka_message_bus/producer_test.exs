@@ -20,8 +20,7 @@ defmodule KafkaMessageBus.ProducerTest do
     test "it fails to produce to topics that have no adapters" do
       message = %{"data" => "here"}
 
-      assert {:error, :topic_not_found} =
-               Producer.produce(message, "key", "resource", "action", topic: "invalid_topic")
+      assert {:error, :topic_not_found} = Producer.produce(message, "key", "resource", "action", topic: "invalid_topic")
     end
   end
 end

@@ -59,8 +59,7 @@ defmodule KafkaMessageBus.Adapters.TestAdapter do
       state.messages
       |> Map.get(key, [])
       |> Enum.filter(fn message ->
-        message["topic"] == topic and message["resource"] == resource and
-          message["action"] == action
+        message["topic"] == topic and message["resource"] == resource and message["action"] == action
       end)
     end)
   end
