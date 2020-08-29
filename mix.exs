@@ -52,7 +52,7 @@ defmodule KafkaMessageBus.Mixfile do
 
   defp deps do
     [
-      {:credo, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.20.0"},
       {:exq, "~> 0.12.1"},
       {:jason, "~> 1.2"},
