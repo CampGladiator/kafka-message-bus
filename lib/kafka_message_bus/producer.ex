@@ -43,12 +43,12 @@ defmodule KafkaMessageBus.Producer do
 
       adapters ->
         adapters
-        |> produce_messages()
+        |> produce_messages(message)
         |> Enum.each(&handle_adapter_result/1)
     end
   end
 
-  defp produce_messages(adapters) do
+  defp produce_messages(adapters, message) do
     Enum.map(adapters, fn adapter ->
       Logger.debug(fn ->
         "Producing message with #{Utils.to_module_short_name(adapter)} adapter"

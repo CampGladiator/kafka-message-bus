@@ -13,7 +13,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
     end)
 
     message.value
-    |> Poison.decode()
+    |> Jason.decode()
     |> configure_logger()
     |> run_consumers(message.topic)
 

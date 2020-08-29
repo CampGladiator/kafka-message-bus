@@ -29,8 +29,8 @@ defmodule KafkaMessageBus.Adapters.TestAdapter do
 
     message =
       message
-      |> Poison.encode!()
-      |> Poison.decode!()
+      |> Jason.encode!()
+      |> Jason.decode!()
       |> Map.put("topic", topic)
 
     if topic in Agent.get(__MODULE__, & &1.producers) do
