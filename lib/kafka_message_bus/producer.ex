@@ -4,6 +4,7 @@ defmodule KafkaMessageBus.Producer do
   by the KafkaMessageBus module.
   """
 
+  alias Ecto.Association.NotLoaded
   alias KafkaMessageBus.{Config, Utils}
 
   require Logger
@@ -29,7 +30,7 @@ defmodule KafkaMessageBus.Producer do
       resource: resource,
       timestamp: DateTime.utc_now(),
       request_id: Keyword.get(Logger.metadata(), :request_id),
-      data: Map.delete(data, :__meta__)
+      data: remove_invalid_elements(data)
     }
 
     opts = Keyword.put(opts, :key, key)
@@ -45,6 +46,23 @@ defmodule KafkaMessageBus.Producer do
         adapters
         |> produce_message_in_adapters(message, opts)
         |> Enum.each(&handle_adapter_result/1)
+    end
+  end
+
+  defp remove_invalid_elements(data) when is_map(data) do
+    data
+    |> Map.to_list()
+    |> Enum.reject(&is_invalid_element?/1)
+    |> Map.new()
+  end
+
+  defp remove_invalid_elements(data), do: data
+
+  defp is_invalid_element?(element) do
+    case element do
+      {key, _} when key in [:__meta__, :__struct__] -> true
+      {_, %{__struct__: NotLoaded}} -> true
+      {_, _} -> false
     end
   end
 

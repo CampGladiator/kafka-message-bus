@@ -56,7 +56,9 @@ defmodule KafkaMessageBus.Mixfile do
       {:ex_doc, "~> 0.20.0"},
       {:exq, "~> 0.12.1"},
       {:jason, "~> 1.2"},
-      {:kaffe, "~> 1.11"}
+      {:kaffe, "~> 1.11"},
+      {:brod, "3.4.0", override: true},
+      {:phoenix_ecto, "~> 3.0"}
     ]
   end
 
