@@ -4,7 +4,7 @@ defmodule KafkaMessageBus.Mixfile do
   def project do
     [
       app: :kafka_message_bus,
-      version: "4.1.12",
+      version: "4.3.0",
       elixir: "~> 1.7.4",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
