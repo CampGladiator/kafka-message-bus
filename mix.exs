@@ -30,8 +30,8 @@ defmodule KafkaMessageBus.Mixfile do
         "Eduardo Cunha",
         "Fernando Heck",
         "Gabriel Alves",
-        "Matthias Nunes",
-        "Gabriel Machado"
+        "Gabriel Machado",
+        "Matthias Nunes"
       ],
       licenses: ["MIT"],
       links: %{
