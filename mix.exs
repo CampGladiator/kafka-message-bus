@@ -26,12 +26,14 @@ defmodule KafkaMessageBus.Mixfile do
   defp package do
     [
       maintainers: [
-        "Alan Ficagna",
-        "Eduardo Cunha",
+        "Calvin Gerling",
+        "Eliseu Daroit",
         "Fernando Heck",
         "Gabriel Alves",
-        "Gabriel Machado",
-        "Matthias Nunes"
+        "Joshua Lockwood",
+        "Kyle Preston",
+        "Megan Weijiang",
+        "Thales Yokoyama"
       ],
       licenses: ["MIT"],
       links: %{
