@@ -9,6 +9,8 @@ defmodule KafkaMessageBus.Producer do
 
   require Logger
 
+  @invalid_element_keys [:__meta__, :__struct__]
+
   def produce(data, key, resource, action, opts \\ []) do
     topic = Keyword.get(opts, :topic, Config.default_topic())
     source = Keyword.get(opts, :source, Config.source())
@@ -60,7 +62,7 @@ defmodule KafkaMessageBus.Producer do
 
   defp is_invalid_element?(element) do
     case element do
-      {key, _} when key in [:__meta__, :__struct__] -> true
+      {key, _} when key in @invalid_element_keys -> true
       {_, %{__struct__: NotLoaded}} -> true
       {_, _} -> false
     end
