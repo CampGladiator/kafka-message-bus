@@ -58,8 +58,6 @@ defmodule KafkaMessageBus.Producer do
     |> Map.new()
   end
 
-  defp remove_invalid_elements(data), do: data
-
   defp is_invalid_element?(element) do
     case element do
       {key, _} when key in @invalid_element_keys -> true

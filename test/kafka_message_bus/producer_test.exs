@@ -16,14 +16,6 @@ defmodule KafkaMessageBus.ProducerTest do
       assert produced_message["data"] == message
     end
 
-    test "produces messages to the configured adapter when message is not a map" do
-      message = "data"
-
-      assert :ok == Producer.produce(message, "key", "resource", "action")
-      assert [produced_message] = TestAdapter.get_produced_messages()
-      assert produced_message["data"] == message
-    end
-
     test "produces messages without not loaded associations on it" do
       message = %{"data" => %NotLoaded{}}
 
