@@ -1,10 +1,14 @@
 defmodule KafkaMessageBus.Adapters.Kaffe do
+  @moduledoc """
+  Implements adapter behavior for Kafka (via Kaffe).
+  """
+
   alias Kaffe.Producer
 
   alias KafkaMessageBus.{
     Adapter,
-    Config,
-    Adapters.Kaffe.Consumer
+    Adapters.Kaffe.Consumer,
+    Config
   }
 
   require Logger
@@ -32,8 +36,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe do
   def produce(message, opts) do
     topic = Keyword.get(opts, :topic, Config.default_topic())
     key = Keyword.get(opts, :key)
-
-    message = Poison.encode!(message)
+    message = Jason.encode!(message)
 
     Producer.produce_sync(topic, [{key, message}])
   end

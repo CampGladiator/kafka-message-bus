@@ -1,8 +1,12 @@
 defmodule KafkaMessageBus.Adapters.Exq do
+  @moduledoc """
+  Implements adapter behavior for Exq (a job processing library for Elixir).
+  """
+
   alias KafkaMessageBus.{
-    Config,
     Adapter,
-    Adapters.Exq.Consumer
+    Adapters.Exq.Consumer,
+    Config
   }
 
   require Logger
@@ -31,8 +35,6 @@ defmodule KafkaMessageBus.Adapters.Exq do
     topic = Keyword.get(opts, :topic, Config.default_topic())
     resource = message.resource
 
-    message = Poison.encode!(message)
-
     :exq
     |> Application.get_env(:consumers)
     |> Enum.flat_map(fn
@@ -50,6 +52,8 @@ defmodule KafkaMessageBus.Adapters.Exq do
         {:error, :no_consumers}
 
       modules ->
+        message = Jason.encode!(message)
+
         Enum.each(modules, fn module ->
           Exq.enqueue(Exq, topic, Consumer, [module, message])
         end)

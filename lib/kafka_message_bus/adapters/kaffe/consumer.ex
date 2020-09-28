@@ -1,4 +1,8 @@
 defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
+  @moduledoc """
+  Consumer module for Kaffe (Kafka).
+  """
+
   alias KafkaMessageBus.{ConsumerHandler, Utils}
 
   require Logger
@@ -9,7 +13,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
     end)
 
     message.value
-    |> Poison.decode()
+    |> Jason.decode()
     |> configure_logger()
     |> run_consumers(message.topic)
 
@@ -57,9 +61,7 @@ defmodule KafkaMessageBus.Adapters.Kaffe.Consumer do
 
       {:error, reason} ->
         Logger.error(fn ->
-          "Failed to run handler - will produce `dead_letter_queue` message. Reason: #{
-            inspect(reason)
-          }"
+          "Failed to run handler - will produce `dead_letter_queue` message. Reason: #{inspect(reason)}"
         end)
 
         message = %{

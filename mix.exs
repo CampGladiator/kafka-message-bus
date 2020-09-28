@@ -4,8 +4,8 @@ defmodule KafkaMessageBus.Mixfile do
   def project do
     [
       app: :kafka_message_bus,
-      version: "4.1.1",
-      elixir: "~> 1.7",
+      version: "4.3.0",
+      elixir: "~> 1.7.4",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -26,12 +26,14 @@ defmodule KafkaMessageBus.Mixfile do
   defp package do
     [
       maintainers: [
-        "Alan Ficagna",
-        "Eduardo Cunha",
+        "Calvin Gerling",
+        "Eliseu Daroit",
         "Fernando Heck",
         "Gabriel Alves",
-        "Matthias Nunes",
-        "Gabriel Machado"
+        "Joshua Lockwood",
+        "Kyle Preston",
+        "Megan Weijiang",
+        "Thales Yokoyama"
       ],
       licenses: ["MIT"],
       links: %{
@@ -52,11 +54,13 @@ defmodule KafkaMessageBus.Mixfile do
 
   defp deps do
     [
-      {:kaffe, "~> 1.11"},
-      {:exq, "~> 0.12.1"},
-      {:poison, "~> 3.0"},
+      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.20.0"},
-      {:credo, "~> 1.0", only: [:dev, :test], runtime: false}
+      {:exq, "~> 0.12.1"},
+      {:jason, "~> 1.2"},
+      {:kaffe, "~> 1.11"},
+      {:brod, "3.4.0"},
+      {:phoenix_ecto, "~> 3.0"}
     ]
   end
 

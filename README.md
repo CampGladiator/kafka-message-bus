@@ -8,7 +8,7 @@ The package can be installed by adding `kafka_message_bus` to your list of depen
 
 ```elixir
 def deps do
-  [{:kafka_message_bus, "~> 3.0"}]
+  [{:kafka_message_bus, "~> 4.3"}]
 end
 ```
 

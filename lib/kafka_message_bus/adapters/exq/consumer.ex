@@ -8,7 +8,7 @@ defmodule KafkaMessageBus.Adapters.Exq.Consumer do
       "Received Exq message"
     end)
 
-    message = Poison.decode!(message)
+    message = Jason.decode!(message)
 
     Utils.set_log_metadata(message)
 

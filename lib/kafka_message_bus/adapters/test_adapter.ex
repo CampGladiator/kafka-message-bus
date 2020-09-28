@@ -1,4 +1,8 @@
 defmodule KafkaMessageBus.Adapters.TestAdapter do
+  @moduledoc """
+  This is an Adapter implementation that can be used in testing contexts instead of Kafka directly.
+  """
+
   @behaviour KafkaMessageBus.Adapter
 
   use Agent
@@ -25,8 +29,8 @@ defmodule KafkaMessageBus.Adapters.TestAdapter do
 
     message =
       message
-      |> Poison.encode!()
-      |> Poison.decode!()
+      |> Jason.encode!()
+      |> Jason.decode!()
       |> Map.put("topic", topic)
 
     if topic in Agent.get(__MODULE__, & &1.producers) do
@@ -55,8 +59,7 @@ defmodule KafkaMessageBus.Adapters.TestAdapter do
       state.messages
       |> Map.get(key, [])
       |> Enum.filter(fn message ->
-        message["topic"] == topic and message["resource"] == resource and
-          message["action"] == action
+        message["topic"] == topic and message["resource"] == resource and message["action"] == action
       end)
     end)
   end
