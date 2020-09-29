@@ -60,7 +60,7 @@ defmodule KafkaMessageBus.Mixfile do
       {:jason, "~> 1.2"},
       {:kaffe, "~> 1.11"},
       {:brod, "3.4.0"},
-      {:phoenix_ecto, "~> 3.0"}
+      {:phoenix_ecto, "~> 4.0"}
     ]
   end
 
